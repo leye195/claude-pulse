@@ -103,7 +103,7 @@ export function ContributionGraph({ dailyModelTokens }: ContributionGraphProps) 
         </span>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto flex justify-center">
         <svg width={svgWidth} height={svgHeight + 10} className="block">
           {monthLabels.map((label, i) => (
             <text
