@@ -1,0 +1,18 @@
+appId: com.claude-analysis.app
+productName: Claude Analysis
+directories:
+  buildResources: build
+  output: release
+files:
+  - dist/**/*
+  - dist-electron/**/*
+mac:
+  target:
+    - dmg
+  category: public.app-category.developer-tools
+win:
+  target:
+    - nsis
+nsis:
+  oneClick: true
+  allowToChangeInstallationDirectory: false
