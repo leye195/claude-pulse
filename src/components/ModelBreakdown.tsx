@@ -27,8 +27,8 @@ export function ModelBreakdown({ modelUsage }: ModelBreakdownProps) {
   if (breakdown.length === 0) return null;
 
   return (
-    <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-lg p-5 mb-6">
-      <span className="text-sm font-semibold text-[var(--text-primary)] block mb-4">
+    <div className="bg-(--bg-card) border border-(--border) rounded-lg p-5 mb-6">
+      <span className="text-sm font-semibold text-(--text-primary) block mb-4">
         모델별 사용 비율
       </span>
 
@@ -56,7 +56,7 @@ export function ModelBreakdown({ modelUsage }: ModelBreakdownProps) {
                 color: "var(--text-primary)",
                 fontSize: 12,
               }}
-              formatter={(value: number) => [value.toLocaleString() + " tokens"]}
+              formatter={(value) => [Number(value).toLocaleString() + " tokens"]}
             />
           </PieChart>
         </ResponsiveContainer>
@@ -68,8 +68,8 @@ export function ModelBreakdown({ modelUsage }: ModelBreakdownProps) {
                 className="w-3 h-3 rounded-sm"
                 style={{ background: getColor(entry.name, i) }}
               />
-              <span className="text-sm text-[var(--text-primary)]">{entry.name}</span>
-              <span className="text-xs text-[var(--text-secondary)]">
+              <span className="text-sm text-(--text-primary)">{entry.name}</span>
+              <span className="text-xs text-(--text-secondary)">
                 {entry.percentage}% ({entry.tokens.toLocaleString()})
               </span>
             </div>
