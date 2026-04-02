@@ -38,7 +38,10 @@ export function App() {
   }
 
   return (
-    <div className="p-6 max-w-[1200px] mx-auto">
+    <div className="max-w-[1200px] mx-auto">
+      <div className="fixed top-0 left-0 right-0 h-9 z-50"
+        style={{ WebkitAppRegion: "drag" } as React.CSSProperties} />
+      <div className="p-6 pt-9">
       <TopBar
         totalMessages={data.totalMessages}
         totalSessions={data.totalSessions}
@@ -53,6 +56,7 @@ export function App() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <DailyChart dailyModelTokens={data.dailyModelTokens} />
         <ModelBreakdown modelUsage={data.modelUsage} />
+      </div>
       </div>
     </div>
   );
