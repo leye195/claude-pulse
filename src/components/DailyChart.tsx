@@ -68,7 +68,7 @@ export function DailyChart({ dailyModelTokens }: DailyChartProps) {
     });
   }, [dailyModelTokens]);
 
-  const chartData: Record<string, string | number>[] = useMemo(() => {
+  const chartData = useMemo((): Record<string, string | number>[] => {
     if (stacked) {
       if (selectedPeriod === 0) return stackedData;
       const ref = new Date(today);
@@ -77,7 +77,7 @@ export function DailyChart({ dailyModelTokens }: DailyChartProps) {
       const cutoffStr = cutoff.toISOString().slice(0, 10);
       return stackedData.filter((d) => (d.date as string) >= cutoffStr);
     }
-    return filterByDateRange(allTokens, selectedPeriod, today);
+    return filterByDateRange(allTokens, selectedPeriod, today) as Record<string, string | number>[];
   }, [stacked, stackedData, allTokens, selectedPeriod, today]);
 
   const formatYAxis = (value: number) => {
