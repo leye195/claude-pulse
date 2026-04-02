@@ -91,9 +91,9 @@ export function DailyChart({ dailyModelTokens }: DailyChartProps) {
   };
 
   return (
-    <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-lg p-5">
+    <div className="bg-(--bg-card) border border-(--border) rounded-lg p-5">
       <div className="flex items-center justify-between mb-4">
-        <span className="text-sm font-semibold text-[var(--text-primary)]">
+        <span className="text-sm font-semibold text-(--text-primary)">
           일별 토큰 사용량
         </span>
         <div className="flex items-center gap-3">
@@ -101,8 +101,8 @@ export function DailyChart({ dailyModelTokens }: DailyChartProps) {
             onClick={() => setStacked((s) => !s)}
             className={`px-3 py-1 rounded text-xs cursor-pointer transition-colors ${
               stacked
-                ? "bg-[var(--badge-bg)] text-purple-400 border border-purple-400"
-                : "bg-[var(--badge-bg)] text-[var(--text-secondary)] border border-transparent"
+                ? "bg-(--badge-bg) text-purple-400 border border-purple-400"
+                : "bg-(--badge-bg) text-(--text-secondary) border border-transparent"
             }`}
           >
             모델별
@@ -114,8 +114,8 @@ export function DailyChart({ dailyModelTokens }: DailyChartProps) {
                 onClick={() => setSelectedPeriod(period.days)}
                 className={`px-3 py-1 rounded text-xs cursor-pointer transition-colors ${
                   selectedPeriod === period.days
-                    ? "bg-[var(--badge-bg)] text-blue-400 border border-blue-400"
-                    : "bg-[var(--badge-bg)] text-[var(--text-secondary)] border border-transparent"
+                    ? "bg-(--badge-bg) text-blue-400 border border-blue-400"
+                    : "bg-(--badge-bg) text-(--text-secondary) border border-transparent"
                 }`}
               >
                 {period.label}
@@ -150,8 +150,8 @@ export function DailyChart({ dailyModelTokens }: DailyChartProps) {
               color: "var(--text-primary)",
               fontSize: 12,
             }}
-            formatter={(value: number, name: string) => [
-              value.toLocaleString() + " tokens",
+            formatter={(value, name) => [
+              Number(value).toLocaleString() + " tokens",
               name === "tokens" ? "토큰" : name,
             ]}
             labelFormatter={(label: string) => label}
