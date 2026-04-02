@@ -77,7 +77,7 @@ export function DailyChart({ dailyModelTokens }: DailyChartProps) {
       const cutoffStr = cutoff.toISOString().slice(0, 10);
       return stackedData.filter((d) => (d.date as string) >= cutoffStr);
     }
-    return filterByDateRange(allTokens, selectedPeriod, today) as Record<string, string | number>[];
+    return filterByDateRange(allTokens, selectedPeriod, today).map(({ date, tokens }) => ({ date, tokens }));
   }, [stacked, stackedData, allTokens, selectedPeriod, today]);
 
   const formatYAxis = (value: number) => {
