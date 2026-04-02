@@ -10,9 +10,10 @@ mac:
   target:
     - dmg
   category: public.app-category.developer-tools
-win:
-  target:
-    - nsis
-nsis:
-  oneClick: true
-  allowToChangeInstallationDirectory: false
+# Windows build requires CI (GitHub Actions) - uncomment when ready
+# win:
+#   target:
+#     - nsis
+# nsis:
+#   oneClick: true
+#   allowToChangeInstallationDirectory: false
