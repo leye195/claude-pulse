@@ -68,7 +68,7 @@ export function DailyChart({ dailyModelTokens }: DailyChartProps) {
     });
   }, [dailyModelTokens]);
 
-  const chartData = useMemo(() => {
+  const chartData: Record<string, string | number>[] = useMemo(() => {
     if (stacked) {
       if (selectedPeriod === 0) return stackedData;
       const ref = new Date(today);
@@ -154,7 +154,7 @@ export function DailyChart({ dailyModelTokens }: DailyChartProps) {
               Number(value).toLocaleString() + " tokens",
               name === "tokens" ? "토큰" : name,
             ]}
-            labelFormatter={(label: string) => label}
+            labelFormatter={(label) => label}
           />
           {stacked ? (
             <>
