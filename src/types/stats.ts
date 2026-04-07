@@ -1,3 +1,5 @@
+import type { HistoryEntry } from "./history";
+
 export interface DailyActivity {
   date: string;
   messageCount: number;
@@ -45,6 +47,8 @@ export interface StatsData {
 export interface ElectronAPI {
   getStatsData: () => Promise<StatsData | null>;
   onStatsUpdated: (callback: (data: StatsData) => void) => () => void;
+  getHistoryData: () => Promise<HistoryEntry[] | null>;
+  onHistoryUpdated: (callback: (data: HistoryEntry[]) => void) => () => void;
 }
 
 declare global {

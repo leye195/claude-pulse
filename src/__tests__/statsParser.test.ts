@@ -6,8 +6,9 @@ import {
   filterByDateRange,
   formatModelName,
   getModelBreakdown,
+  getToolCallData,
 } from "../utils/statsParser";
-import type { DailyModelTokens, ModelUsage } from "../types/stats";
+import type { DailyActivity, DailyModelTokens, ModelUsage } from "../types/stats";
 
 const sampleDailyTokens: DailyModelTokens[] = [
   {
@@ -171,5 +172,39 @@ describe("getModelBreakdown", () => {
 
   it("returns empty array for empty input", () => {
     expect(getModelBreakdown({})).toEqual([]);
+  });
+});
+
+describe("getToolCallData", () => {
+  const dailyActivity: DailyActivity[] = [
+    { date: "2026-03-10", messageCount: 100, sessionCount: 3, toolCallCount: 250 },
+    { date: "2026-03-11", messageCount: 50, sessionCount: 2, toolCallCount: 100 },
+    { date: "2026-03-12", messageCount: 0, sessionCount: 0, toolCallCount: 0 },
+  ];
+
+  it("calculates tool call ratio correctly", () => {
+    const result = getToolCallData(dailyActivity);
+    expect(result).toHaveLength(3);
+    expect(result[0].ratio).toBe(2.5);
+    expect(result[1].ratio).toBe(2);
+  });
+
+  it("handles zero messages without division error", () => {
+    const result = getToolCallData(dailyActivity);
+    expect(result[2].ratio).toBe(0);
+  });
+
+  it("preserves date and raw counts", () => {
+    const result = getToolCallData(dailyActivity);
+    expect(result[0]).toEqual({
+      date: "2026-03-10",
+      toolCalls: 250,
+      messages: 100,
+      ratio: 2.5,
+    });
+  });
+
+  it("returns empty array for empty input", () => {
+    expect(getToolCallData([])).toEqual([]);
   });
 });

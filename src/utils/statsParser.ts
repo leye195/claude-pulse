@@ -1,4 +1,4 @@
-import type { DailyModelTokens, ModelUsage } from "../types/stats";
+import type { DailyActivity, DailyModelTokens, ModelUsage } from "../types/stats";
 
 export interface ModelBreakdownEntry {
   name: string;
@@ -56,6 +56,24 @@ export function formatModelName(modelId: string): string {
   if (!match) return modelId;
   const [, family, major, minor] = match;
   return `${family.charAt(0).toUpperCase() + family.slice(1)} ${major}.${minor}`;
+}
+
+export interface ToolCallEntry {
+  date: string;
+  toolCalls: number;
+  messages: number;
+  ratio: number;
+}
+
+export function getToolCallData(dailyActivity: DailyActivity[]): ToolCallEntry[] {
+  return dailyActivity.map((d) => ({
+    date: d.date,
+    toolCalls: d.toolCallCount,
+    messages: d.messageCount,
+    ratio: d.messageCount > 0
+      ? Math.round((d.toolCallCount / d.messageCount) * 100) / 100
+      : 0,
+  }));
 }
 
 export function getModelBreakdown(

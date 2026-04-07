@@ -21,6 +21,30 @@ function readStatsFile(): unknown | null {
   }
 }
 
+function getHistoryPath(): string {
+  const home = app.getPath("home");
+  return path.join(home, ".claude", "history.jsonl");
+}
+
+function readHistoryFile(): unknown[] | null {
+  const historyPath = getHistoryPath();
+  try {
+    const raw = fs.readFileSync(historyPath, "utf-8");
+    const entries: unknown[] = [];
+    for (const line of raw.split("\n")) {
+      if (!line.trim()) continue;
+      try {
+        entries.push(JSON.parse(line));
+      } catch {
+        // skip malformed lines
+      }
+    }
+    return entries.length > 0 ? entries : null;
+  } catch {
+    return null;
+  }
+}
+
 let mainWindow: BrowserWindow | null = null;
 
 function createWindow(): void {
@@ -51,11 +75,19 @@ function createWindow(): void {
     if (data && mainWindow) {
       mainWindow.webContents.send("stats-updated", data);
     }
+    const history = readHistoryFile();
+    if (history && mainWindow) {
+      mainWindow.webContents.send("history-updated", history);
+    }
   });
 }
 
 ipcMain.handle("get-stats-data", () => {
   return readStatsFile();
+});
+
+ipcMain.handle("get-history-data", () => {
+  return readHistoryFile();
 });
 
 app.whenReady().then(createWindow);

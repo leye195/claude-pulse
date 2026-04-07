@@ -55,9 +55,9 @@ export function SummaryCards({ data }: SummaryCardsProps) {
       {cards.map((card) => (
         <div
           key={card.label}
-          className="bg-[var(--bg-card)] border border-[var(--border)] rounded-lg p-4"
+          className="bg-(--bg-card) border border-(--border) rounded-lg p-4"
         >
-          <div className="text-xs text-[var(--text-secondary)] mb-1">{card.label}</div>
+          <div className="text-xs text-(--text-secondary) mb-1">{card.label}</div>
           <div className={`text-2xl font-semibold ${card.color}`}>{card.value}</div>
         </div>
       ))}

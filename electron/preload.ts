@@ -9,4 +9,12 @@ contextBridge.exposeInMainWorld("electronAPI", {
       ipcRenderer.removeListener("stats-updated", handler);
     };
   },
+  getHistoryData: () => ipcRenderer.invoke("get-history-data"),
+  onHistoryUpdated: (callback: (data: unknown[]) => void) => {
+    const handler = (_event: Electron.IpcRendererEvent, data: unknown[]) => callback(data);
+    ipcRenderer.on("history-updated", handler);
+    return () => {
+      ipcRenderer.removeListener("history-updated", handler);
+    };
+  },
 });

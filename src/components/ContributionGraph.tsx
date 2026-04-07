@@ -95,10 +95,10 @@ export function ContributionGraph({ dailyModelTokens }: ContributionGraphProps) 
   const svgHeight = TOP_PADDING + 7 * STEP;
 
   return (
-    <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-lg p-5 mb-6 relative">
+    <div className="bg-(--bg-card) border border-(--border) rounded-lg p-5 mb-6 relative">
       <div className="flex items-center justify-between mb-4">
-        <span className="text-sm font-semibold text-[var(--text-primary)]">토큰 사용량 잔디</span>
-        <span className="text-xs text-[var(--text-secondary)]">
+        <span className="text-sm font-semibold text-(--text-primary)">토큰 사용량 잔디</span>
+        <span className="text-xs text-(--text-secondary)">
           {new Date().getFullYear()}년
         </span>
       </div>
@@ -156,7 +156,7 @@ export function ContributionGraph({ dailyModelTokens }: ContributionGraphProps) 
         </svg>
       </div>
 
-      <div className="flex items-center justify-end gap-1 mt-3 text-xs text-[var(--text-secondary)]">
+      <div className="flex items-center justify-end gap-1 mt-3 text-xs text-(--text-secondary)">
         <span>Less</span>
         {COLORS.map((color, i) => (
           <div
@@ -170,7 +170,7 @@ export function ContributionGraph({ dailyModelTokens }: ContributionGraphProps) 
 
       {tooltip && (
         <div
-          className="fixed z-50 bg-[var(--text-primary)] text-[var(--bg-primary)] text-xs px-2 py-1 rounded pointer-events-none"
+          className="fixed z-50 bg-(--text-primary) text-(--bg-primary) text-xs px-2 py-1 rounded pointer-events-none"
           style={{
             left: tooltip.x,
             top: tooltip.y - 30,
