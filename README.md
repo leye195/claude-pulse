@@ -2,18 +2,29 @@
 
 Claude Code 사용량을 시각적으로 분석할 수 있는 데스크톱 앱입니다.
 
-`~/.claude/stats-cache.json` 데이터를 기반으로 GitHub 스타일의 잔디 그래프, 일별 토큰 사용량 차트, 모델별 통계를 제공합니다.
+`~/.claude/stats-cache.json`과 `~/.claude/history.jsonl` 데이터를 기반으로 사용량 분석과 프로젝트별 활동 분석을 제공합니다.
 
 <!-- 스크린샷 추가 예정 -->
 <!-- ![Screenshot](docs/screenshot.png) -->
 
 ## 주요 기능
 
+### 사용량 분석 탭
 - **잔디 Heatmap** — GitHub contribution graph 스타일로 일별 토큰 사용량 시각화
 - **일별 토큰 차트** — 바 차트로 일별 추세 확인 (7일/30일/전체 필터)
 - **모델별 스택 뷰** — Opus/Sonnet/Haiku 모델별 사용량을 색상으로 구분
 - **모델별 파이 차트** — 전체 기간 모델별 토큰 사용 비율
 - **요약 카드** — 최근 토큰, 메시지, 총 세션, 사용 기간
+
+### 프로젝트 활동 탭
+- **프로젝트 요약 카드** — 총 프로젝트, 총 세션, 총 대화 턴, 가장 활발한 프로젝트
+- **프로젝트별 파이 차트** — 프로젝트별 세션 비율
+- **프로젝트 활동 추이** — 프로젝트별 일별 활동 스택 바 차트
+- **시간대별 패턴** — 시간대별 사용 빈도 바 차트
+- **요일별 히트맵** — 요일 × 시간대 사용 패턴 히트맵
+- **도구 호출 차트** — 도구별 호출 횟수 통계
+
+### 공통
 - **Light/Dark 테마** — 시스템 설정 감지 + 수동 토글
 - **자동 갱신** — 30초 간격 + 윈도우 포커스 시 데이터 자동 새로고침
 
@@ -58,25 +69,36 @@ claude-analysis/
 │   └── preload.ts           # contextBridge (CJS)
 ├── src/
 │   ├── main.tsx             # React 엔트리 (QueryClientProvider)
-│   ├── App.tsx              # 루트 레이아웃
+│   ├── App.tsx              # 루트 컴포넌트 (탭 전환, 데이터 오케스트레이션)
 │   ├── index.css            # Tailwind + 테마 CSS 변수
 │   ├── components/
 │   │   ├── TopBar.tsx       # 앱 타이틀 + 요약 뱃지 + 테마 토글
-│   │   ├── SummaryCards.tsx # 통계 카드 4개
+│   │   ├── TabBar.tsx       # 탭 네비게이션 (사용량 분석 / 프로젝트 활동)
+│   │   ├── SummaryCards.tsx # 사용량 요약 카드 4개
 │   │   ├── ContributionGraph.tsx  # 잔디 heatmap (SVG)
 │   │   ├── DailyChart.tsx   # 일별 바 차트 + 모델별 스택
 │   │   ├── ModelBreakdown.tsx # 모델별 파이 차트
+│   │   ├── ProjectSummaryCards.tsx  # 프로젝트 요약 카드 4개
+│   │   ├── ProjectBreakdown.tsx    # 프로젝트별 도넛 파이 차트
+│   │   ├── ProjectActivityTrend.tsx # 프로젝트별 활동 추이
+│   │   ├── HourlyChart.tsx  # 시간대별 사용 패턴
+│   │   ├── WeekdayHeatmap.tsx # 요일별 히트맵
+│   │   ├── ToolCallChart.tsx # 도구 호출 통계
 │   │   ├── ThemeToggle.tsx  # 테마 전환 버튼
 │   │   └── EmptyState.tsx   # 빈 상태 / 에러 UI
 │   ├── hooks/
-│   │   ├── useStatsData.ts  # TanStack Query 기반 데이터 fetching
+│   │   ├── useStatsData.ts  # stats-cache.json 데이터 훅
+│   │   ├── useHistoryData.ts # history.jsonl 데이터 훅
 │   │   └── useTheme.ts     # 테마 상태 관리
 │   ├── types/
-│   │   └── stats.ts         # TypeScript 타입 정의
+│   │   ├── stats.ts         # 사용량 분석 타입 정의
+│   │   └── history.ts       # 프로젝트 활동 타입 정의
 │   └── utils/
-│       └── statsParser.ts   # 데이터 변환/집계 유틸
+│       ├── statsParser.ts   # 토큰/모델 데이터 변환 유틸
+│       └── historyParser.ts # 프로젝트/히스토리 데이터 변환 유틸
 ├── src/__tests__/
-│   └── statsParser.test.ts  # 유닛 테스트 (21개)
+│   ├── statsParser.test.ts  # statsParser 유닛 테스트 (21개)
+│   └── historyParser.test.ts # historyParser 유닛 테스트 (17개)
 ├── build/                   # 앱 아이콘 (icon.icns, icon.png)
 ├── .github/workflows/
 │   └── release.yml          # CI: 태그 푸시 시 Mac/Win 빌드
@@ -90,9 +112,12 @@ claude-analysis/
 
 ## 데이터 소스
 
-`~/.claude/stats-cache.json` 파일을 읽어 데이터를 표시합니다.
+| 파일 | 용도 | 탭 |
+|------|------|-----|
+| `~/.claude/stats-cache.json` | 토큰/모델별 사용량 통계 | 사용량 분석 |
+| `~/.claude/history.jsonl` | 세션/프로젝트별 활동 기록 | 프로젝트 활동 |
 
-이 파일은 Claude Code CLI에서 `/stats` 명령을 실행할 때 갱신됩니다. 앱은 다음 시점에 자동으로 데이터를 다시 읽습니다:
+앱은 다음 시점에 자동으로 데이터를 다시 읽습니다:
 
 - 앱 시작 시
 - 30초 간격 (TanStack Query `refetchInterval`)
