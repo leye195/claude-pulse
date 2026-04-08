@@ -1,4 +1,4 @@
-# Claude Analysis
+# Claude Pulse
 
 Claude Code 사용량을 시각적으로 분석할 수 있는 데스크톱 앱입니다.
 
