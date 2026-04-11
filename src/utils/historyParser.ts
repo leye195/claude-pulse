@@ -124,7 +124,7 @@ export function getProjectNames(entries: HistoryEntry[]): string[] {
 }
 
 export interface HeatmapCell {
-  day: number;  // 0(Sun)~6(Sat)
+  day: number; // 0(Sun)~6(Sat)
   hour: number; // 0~23
   count: number;
 }
@@ -147,10 +147,7 @@ export function getWeekdayHourlyHeatmap(entries: HistoryEntry[]): HeatmapCell[] 
   return cells;
 }
 
-export function filterHistoryByDateRange(
-  entries: HistoryEntry[],
-  days: number
-): HistoryEntry[] {
+export function filterHistoryByDateRange(entries: HistoryEntry[], days: number): HistoryEntry[] {
   if (days === 0) return entries;
   const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
   return entries.filter((e) => e.timestamp >= cutoff);

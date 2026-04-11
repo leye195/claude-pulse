@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { DailyModelTokens } from "../types/stats";
-import { getDailyTokensArray, getContributionLevel } from "../utils/statsParser";
+import { getContributionLevel, getDailyTokensArray } from "../utils/statsParser";
 
 interface ContributionGraphProps {
   dailyModelTokens: DailyModelTokens[];
@@ -12,8 +12,18 @@ const CELL_GAP = 2;
 const STEP = CELL_SIZE + CELL_GAP;
 const DAY_LABELS = ["", "Mon", "", "Wed", "", "Fri", ""];
 const MONTH_NAMES = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
 ];
 
 function getWeeksData(dailyTokens: { date: string; tokens: number }[]) {
@@ -71,14 +81,16 @@ function getMonthLabels(weeks: { date: string; tokens: number; dayOfWeek: number
 }
 
 export function ContributionGraph({ dailyModelTokens }: ContributionGraphProps) {
-  const [tooltip, setTooltip] = useState<{ date: string; tokens: number; x: number; y: number } | null>(null);
+  const [tooltip, setTooltip] = useState<{
+    date: string;
+    tokens: number;
+    x: number;
+    y: number;
+  } | null>(null);
 
   const dailyTokens = useMemo(() => getDailyTokensArray(dailyModelTokens), [dailyModelTokens]);
   const weeks = useMemo(() => getWeeksData(dailyTokens), [dailyTokens]);
-  const maxTokens = useMemo(
-    () => Math.max(...dailyTokens.map((d) => d.tokens), 0),
-    [dailyTokens]
-  );
+  const maxTokens = useMemo(() => Math.max(...dailyTokens.map((d) => d.tokens), 0), [dailyTokens]);
   const monthLabels = useMemo(() => getMonthLabels(weeks), [weeks]);
 
   const COLORS = [
@@ -98,9 +110,7 @@ export function ContributionGraph({ dailyModelTokens }: ContributionGraphProps) 
     <div className="bg-(--bg-card) border border-(--border) rounded-lg p-5 mb-6 relative">
       <div className="flex items-center justify-between mb-4">
         <span className="text-sm font-semibold text-(--text-primary)">토큰 사용량 잔디</span>
-        <span className="text-xs text-(--text-secondary)">
-          {new Date().getFullYear()}년
-        </span>
+        <span className="text-xs text-(--text-secondary)">{new Date().getFullYear()}년</span>
       </div>
 
       <div className="overflow-x-auto flex justify-center">
@@ -159,11 +169,7 @@ export function ContributionGraph({ dailyModelTokens }: ContributionGraphProps) 
       <div className="flex items-center justify-end gap-1 mt-3 text-xs text-(--text-secondary)">
         <span>Less</span>
         {COLORS.map((color, i) => (
-          <div
-            key={i}
-            className="w-3 h-3 rounded-sm"
-            style={{ background: color }}
-          />
+          <div key={i} className="w-3 h-3 rounded-sm" style={{ background: color }} />
         ))}
         <span>More</span>
       </div>

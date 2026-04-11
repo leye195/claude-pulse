@@ -1,22 +1,51 @@
-import { describe, it, expect } from "vitest";
-import {
-  parseProjectName,
-  getProjectSummaries,
-  getProjectDailyActivity,
-  getHourlyActivityByProject,
-  getProjectNames,
-  filterHistoryByDateRange,
-  getWeekdayHourlyHeatmap,
-} from "../utils/historyParser";
+import { describe, expect, it } from "vitest";
 import type { HistoryEntry } from "../types/history";
+import {
+  filterHistoryByDateRange,
+  getHourlyActivityByProject,
+  getProjectDailyActivity,
+  getProjectNames,
+  getProjectSummaries,
+  getWeekdayHourlyHeatmap,
+  parseProjectName,
+} from "../utils/historyParser";
 
 const sampleEntries: HistoryEntry[] = [
-  { display: "msg1", timestamp: new Date("2026-03-10T10:00:00").getTime(), project: "/home/user/projects/web" },
-  { display: "msg2", timestamp: new Date("2026-03-10T10:05:00").getTime(), project: "/home/user/projects/web", sessionId: "s1" },
-  { display: "msg3", timestamp: new Date("2026-03-10T14:00:00").getTime(), project: "/home/user/projects/web", sessionId: "s2" },
-  { display: "msg4", timestamp: new Date("2026-03-11T11:00:00").getTime(), project: "/home/user/projects/admin", sessionId: "s3" },
-  { display: "msg5", timestamp: new Date("2026-03-11T15:00:00").getTime(), project: "/home/user/projects/admin", sessionId: "s3" },
-  { display: "msg6", timestamp: new Date("2026-03-12T09:00:00").getTime(), project: "/home/user/projects/web", sessionId: "s4" },
+  {
+    display: "msg1",
+    timestamp: new Date("2026-03-10T10:00:00").getTime(),
+    project: "/home/user/projects/web",
+  },
+  {
+    display: "msg2",
+    timestamp: new Date("2026-03-10T10:05:00").getTime(),
+    project: "/home/user/projects/web",
+    sessionId: "s1",
+  },
+  {
+    display: "msg3",
+    timestamp: new Date("2026-03-10T14:00:00").getTime(),
+    project: "/home/user/projects/web",
+    sessionId: "s2",
+  },
+  {
+    display: "msg4",
+    timestamp: new Date("2026-03-11T11:00:00").getTime(),
+    project: "/home/user/projects/admin",
+    sessionId: "s3",
+  },
+  {
+    display: "msg5",
+    timestamp: new Date("2026-03-11T15:00:00").getTime(),
+    project: "/home/user/projects/admin",
+    sessionId: "s3",
+  },
+  {
+    display: "msg6",
+    timestamp: new Date("2026-03-12T09:00:00").getTime(),
+    project: "/home/user/projects/web",
+    sessionId: "s4",
+  },
 ];
 
 describe("parseProjectName", () => {
@@ -43,9 +72,7 @@ describe("parseProjectName", () => {
   });
 
   it("extracts project name before .claude on POSIX path", () => {
-    expect(
-      parseProjectName("/Users/me/code/myapp/.claude/worktrees/feature")
-    ).toBe("myapp");
+    expect(parseProjectName("/Users/me/code/myapp/.claude/worktrees/feature")).toBe("myapp");
   });
 });
 

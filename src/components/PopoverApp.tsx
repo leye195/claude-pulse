@@ -1,18 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import type { ActiveSession, StatsData } from "../types/stats";
+import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis } from "recharts";
 import { useStatsData } from "../hooks/useStatsData";
 import { useTheme } from "../hooks/useTheme";
-import {
-  getContributionLevel,
-  getDailyTokensArray,
-} from "../utils/statsParser";
+import type { ActiveSession, StatsData } from "../types/stats";
+import { getContributionLevel, getDailyTokensArray } from "../utils/statsParser";
 
 const TOOLTIP_STYLE = {
   background: "var(--bg-card)",
@@ -52,10 +43,7 @@ function getStats(data: StatsData) {
     (sum, m) => sum + m.inputTokens + m.outputTokens,
     0
   );
-  const totalToolCalls = data.dailyActivity.reduce(
-    (sum, d) => sum + d.toolCallCount,
-    0
-  );
+  const totalToolCalls = data.dailyActivity.reduce((sum, d) => sum + d.toolCallCount, 0);
   const firstDate = new Date(data.firstSessionDate);
   const daysSinceFirst = Math.max(
     1,
@@ -217,26 +205,17 @@ export function PopoverApp() {
       </header>
 
       <section className="px-4 py-3 border-b border-(--border)">
-        <div className="text-xs text-(--text-secondary) mb-2">
-          활성 세션 ({sessions.length})
-        </div>
+        <div className="text-xs text-(--text-secondary) mb-2">활성 세션 ({sessions.length})</div>
         {sessions.length === 0 ? (
-          <div className="text-xs text-(--text-secondary) py-2">
-            실행 중인 세션이 없습니다
-          </div>
+          <div className="text-xs text-(--text-secondary) py-2">실행 중인 세션이 없습니다</div>
         ) : (
           <ul className="space-y-1.5">
             {sessions.map((s) => (
-              <li
-                key={s.sessionId}
-                className="flex items-center gap-2 text-xs"
-              >
+              <li key={s.sessionId} className="flex items-center gap-2 text-xs">
                 <span aria-hidden>{s.isActive ? "⚡" : "💤"}</span>
                 <span className="font-medium text-(--text-primary) truncate flex-1">
                   {s.projectName}
-                  {s.name ? (
-                    <span className="text-(--text-secondary)"> — {s.name}</span>
-                  ) : null}
+                  {s.name ? <span className="text-(--text-secondary)"> — {s.name}</span> : null}
                 </span>
                 <span className="text-(--text-secondary) whitespace-nowrap">
                   {formatElapsed(s.startedAt)}
@@ -292,9 +271,7 @@ export function PopoverApp() {
           </section>
         </>
       ) : (
-        <div className="px-4 py-6 text-xs text-(--text-secondary)">
-          데이터를 불러오는 중...
-        </div>
+        <div className="px-4 py-6 text-xs text-(--text-secondary)">데이터를 불러오는 중...</div>
       )}
     </div>
   );

@@ -26,11 +26,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
     };
   },
   showMainWindow: () => ipcRenderer.send("show-main-window"),
-  notifyThemeChanged: (theme: "light" | "dark") =>
-    ipcRenderer.send("theme-changed", theme),
+  notifyThemeChanged: (theme: "light" | "dark") => ipcRenderer.send("theme-changed", theme),
   onThemeChanged: (callback: (theme: "light" | "dark") => void) => {
-    const handler = (_event: Electron.IpcRendererEvent, theme: "light" | "dark") =>
-      callback(theme);
+    const handler = (_event: Electron.IpcRendererEvent, theme: "light" | "dark") => callback(theme);
     ipcRenderer.on("theme-changed", handler);
     return () => {
       ipcRenderer.removeListener("theme-changed", handler);

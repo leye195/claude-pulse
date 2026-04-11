@@ -1,20 +1,16 @@
 import { useMemo, useState } from "react";
 import {
-  BarChart,
   Bar,
-  XAxis,
-  YAxis,
+  BarChart,
   CartesianGrid,
-  Tooltip,
   Legend,
   ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from "recharts";
 import type { DailyModelTokens } from "../types/stats";
-import {
-  getDailyTokensArray,
-  filterByDateRange,
-  formatModelName,
-} from "../utils/statsParser";
+import { filterByDateRange, formatModelName, getDailyTokensArray } from "../utils/statsParser";
 
 interface DailyChartProps {
   dailyModelTokens: DailyModelTokens[];
@@ -52,10 +48,7 @@ export function DailyChart({ dailyModelTokens }: DailyChartProps) {
     return Array.from(names).sort();
   }, [dailyModelTokens]);
 
-  const allTokens = useMemo(
-    () => getDailyTokensArray(dailyModelTokens),
-    [dailyModelTokens]
-  );
+  const allTokens = useMemo(() => getDailyTokensArray(dailyModelTokens), [dailyModelTokens]);
 
   const stackedData = useMemo(() => {
     return dailyModelTokens.map((entry) => {
@@ -77,7 +70,10 @@ export function DailyChart({ dailyModelTokens }: DailyChartProps) {
       const cutoffStr = cutoff.toISOString().slice(0, 10);
       return stackedData.filter((d) => (d.date as string) >= cutoffStr);
     }
-    return filterByDateRange(allTokens, selectedPeriod, today).map(({ date, tokens }) => ({ date, tokens }));
+    return filterByDateRange(allTokens, selectedPeriod, today).map(({ date, tokens }) => ({
+      date,
+      tokens,
+    }));
   }, [stacked, stackedData, allTokens, selectedPeriod, today]);
 
   const formatYAxis = (value: number) => {
@@ -93,9 +89,7 @@ export function DailyChart({ dailyModelTokens }: DailyChartProps) {
   return (
     <div className="bg-(--bg-card) border border-(--border) rounded-lg p-5">
       <div className="flex items-center justify-between mb-4">
-        <span className="text-sm font-semibold text-(--text-primary)">
-          일별 토큰 사용량
-        </span>
+        <span className="text-sm font-semibold text-(--text-primary)">일별 토큰 사용량</span>
         <div className="flex items-center gap-3">
           <button
             onClick={() => setStacked((s) => !s)}
@@ -158,16 +152,9 @@ export function DailyChart({ dailyModelTokens }: DailyChartProps) {
           />
           {stacked ? (
             <>
-              <Legend
-                wrapperStyle={{ fontSize: 11, color: "var(--text-secondary)" }}
-              />
+              <Legend wrapperStyle={{ fontSize: 11, color: "var(--text-secondary)" }} />
               {modelNames.map((name) => (
-                <Bar
-                  key={name}
-                  dataKey={name}
-                  stackId="models"
-                  fill={getModelColor(name)}
-                />
+                <Bar key={name} dataKey={name} stackId="models" fill={getModelColor(name)} />
               ))}
             </>
           ) : (

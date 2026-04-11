@@ -1,14 +1,14 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+import type { DailyActivity, DailyModelTokens, ModelUsage } from "../types/stats";
 import {
-  getTotalTokensForDate,
-  getContributionLevel,
-  getDailyTokensArray,
   filterByDateRange,
   formatModelName,
+  getContributionLevel,
+  getDailyTokensArray,
   getModelBreakdown,
   getToolCallData,
+  getTotalTokensForDate,
 } from "../utils/statsParser";
-import type { DailyActivity, DailyModelTokens, ModelUsage } from "../types/stats";
 
 const sampleDailyTokens: DailyModelTokens[] = [
   {

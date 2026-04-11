@@ -1,17 +1,17 @@
 import { useMemo, useState } from "react";
 import {
-  ComposedChart,
   Bar,
+  CartesianGrid,
+  ComposedChart,
+  Legend,
   Line,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
 } from "recharts";
 import type { DailyActivity } from "../types/stats";
-import { getToolCallData, filterByDateRange } from "../utils/statsParser";
+import { filterByDateRange, getToolCallData } from "../utils/statsParser";
 
 interface ToolCallChartProps {
   dailyActivity: DailyActivity[];
@@ -55,9 +55,7 @@ export function ToolCallChart({ dailyActivity }: ToolCallChartProps) {
   return (
     <div className="bg-(--bg-card) border border-(--border) rounded-lg p-5 mt-6">
       <div className="flex items-center justify-between mb-1">
-        <span className="text-sm font-semibold text-(--text-primary)">
-          도구 호출 통계
-        </span>
+        <span className="text-sm font-semibold text-(--text-primary)">도구 호출 통계</span>
         <div className="flex gap-2">
           {PERIODS.map((period) => (
             <button
@@ -75,7 +73,8 @@ export function ToolCallChart({ dailyActivity }: ToolCallChartProps) {
         </div>
       </div>
       <p className="text-xs text-(--text-secondary) mb-4">
-        파일 읽기·편집, 명령 실행, 검색 등 Claude가 사용한 도구 수. 비율이 높을수록 자율적으로 작업한 정도가 큼
+        파일 읽기·편집, 명령 실행, 검색 등 Claude가 사용한 도구 수. 비율이 높을수록 자율적으로
+        작업한 정도가 큼
       </p>
 
       <ResponsiveContainer width="100%" height={200}>
@@ -117,7 +116,10 @@ export function ToolCallChart({ dailyActivity }: ToolCallChartProps) {
               if (name === "메시지당 호출") return [`${Number(value).toFixed(2)}x`, name];
               if (name === "도구 호출") {
                 const messages = props.payload?.messages ?? 0;
-                return [`${Number(value).toLocaleString()}회 (메시지 ${messages.toLocaleString()}개)`, name];
+                return [
+                  `${Number(value).toLocaleString()}회 (메시지 ${messages.toLocaleString()}개)`,
+                  name,
+                ];
               }
               return [Number(value).toLocaleString(), name];
             }}

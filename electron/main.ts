@@ -1,7 +1,7 @@
-import { app, BrowserWindow, Tray, ipcMain, nativeImage, screen } from "electron";
-import path from "path";
-import fs from "fs";
 import { execSync } from "child_process";
+import { app, BrowserWindow, ipcMain, nativeImage, screen, Tray } from "electron";
+import fs from "fs";
+import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

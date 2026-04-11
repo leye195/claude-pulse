@@ -1,5 +1,5 @@
-import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import type { HistoryEntry } from "../types/history";
 
 async function fetchHistory(): Promise<HistoryEntry[] | null> {

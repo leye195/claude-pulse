@@ -11,10 +11,7 @@ export interface DailyTokenEntry {
   tokens: number;
 }
 
-export function getTotalTokensForDate(
-  dailyModelTokens: DailyModelTokens[],
-  date: string
-): number {
+export function getTotalTokensForDate(dailyModelTokens: DailyModelTokens[], date: string): number {
   const entry = dailyModelTokens.find((d) => d.date === date);
   if (!entry) return 0;
   return Object.values(entry.tokensByModel).reduce((sum, t) => sum + t, 0);
@@ -29,9 +26,7 @@ export function getContributionLevel(tokens: number, maxTokens: number): number 
   return 4;
 }
 
-export function getDailyTokensArray(
-  dailyModelTokens: DailyModelTokens[]
-): DailyTokenEntry[] {
+export function getDailyTokensArray(dailyModelTokens: DailyModelTokens[]): DailyTokenEntry[] {
   return dailyModelTokens.map((entry) => ({
     date: entry.date,
     tokens: Object.values(entry.tokensByModel).reduce((sum, t) => sum + t, 0),
@@ -70,15 +65,11 @@ export function getToolCallData(dailyActivity: DailyActivity[]): ToolCallEntry[]
     date: d.date,
     toolCalls: d.toolCallCount,
     messages: d.messageCount,
-    ratio: d.messageCount > 0
-      ? Math.round((d.toolCallCount / d.messageCount) * 100) / 100
-      : 0,
+    ratio: d.messageCount > 0 ? Math.round((d.toolCallCount / d.messageCount) * 100) / 100 : 0,
   }));
 }
 
-export function getModelBreakdown(
-  modelUsage: Record<string, ModelUsage>
-): ModelBreakdownEntry[] {
+export function getModelBreakdown(modelUsage: Record<string, ModelUsage>): ModelBreakdownEntry[] {
   const entries = Object.entries(modelUsage).map(([modelId, usage]) => ({
     name: formatModelName(modelId),
     tokens: usage.inputTokens + usage.outputTokens,

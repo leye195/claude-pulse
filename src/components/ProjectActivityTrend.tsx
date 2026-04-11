@@ -1,19 +1,19 @@
 import { useMemo, useState } from "react";
 import {
-  BarChart,
   Bar,
-  XAxis,
-  YAxis,
+  BarChart,
   CartesianGrid,
-  Tooltip,
   Legend,
   ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from "recharts";
 import type { HistoryEntry } from "../types/history";
 import {
+  filterHistoryByDateRange,
   getProjectDailyActivity,
   getProjectNames,
-  filterHistoryByDateRange,
   PROJECT_COLORS,
 } from "../utils/historyParser";
 
@@ -46,9 +46,7 @@ export function ProjectActivityTrend({ entries }: ProjectActivityTrendProps) {
   return (
     <div className="bg-(--bg-card) border border-(--border) rounded-lg p-5">
       <div className="flex items-center justify-between mb-4">
-        <span className="text-sm font-semibold text-(--text-primary)">
-          프로젝트별 활동 추이
-        </span>
+        <span className="text-sm font-semibold text-(--text-primary)">프로젝트별 활동 추이</span>
         <div className="flex gap-2">
           {PERIODS.map((period) => (
             <button

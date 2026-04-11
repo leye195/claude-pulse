@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import type { ModelUsage } from "../types/stats";
 import { getModelBreakdown } from "../utils/statsParser";
 
@@ -64,10 +64,7 @@ export function ModelBreakdown({ modelUsage }: ModelBreakdownProps) {
         <div className="flex-1 space-y-2">
           {breakdown.map((entry, i) => (
             <div key={entry.name} className="flex items-center gap-2">
-              <div
-                className="w-3 h-3 rounded-sm"
-                style={{ background: getColor(entry.name, i) }}
-              />
+              <div className="w-3 h-3 rounded-sm" style={{ background: getColor(entry.name, i) }} />
               <span className="text-sm text-(--text-primary)">{entry.name}</span>
               <span className="text-xs text-(--text-secondary)">
                 {entry.percentage}% ({entry.tokens.toLocaleString()})

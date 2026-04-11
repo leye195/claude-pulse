@@ -1,5 +1,5 @@
-import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import type { StatsData } from "../types/stats";
 
 async function fetchStats(): Promise<StatsData | null> {
@@ -28,7 +28,11 @@ export function useStatsData() {
   return {
     data: data ?? null,
     loading: isLoading,
-    error: error ? "데이터를 읽는 중 오류가 발생했습니다." : data === null && !isLoading ? "Claude Code 사용 데이터가 없습니다. ~/.claude/stats-cache.json 파일을 찾을 수 없습니다." : null,
+    error: error
+      ? "데이터를 읽는 중 오류가 발생했습니다."
+      : data === null && !isLoading
+        ? "Claude Code 사용 데이터가 없습니다. ~/.claude/stats-cache.json 파일을 찾을 수 없습니다."
+        : null,
     retry: refetch,
   };
 }

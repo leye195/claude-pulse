@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import type { HistoryEntry } from "../types/history";
 import { getProjectSummaries, PROJECT_COLORS } from "../utils/historyParser";
 
