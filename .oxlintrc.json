@@ -10,7 +10,10 @@
   },
   "rules": {
     "import/order": "warn",
-    "no-unused-vars": "warn"
+    "no-unused-vars": "warn",
+    "react/react-in-jsx-scope": "off",
+    "react/prop-types": "off",
+    "import/no-unassigned-import": "off"
   },
   "ignorePatterns": ["dist", "dist-electron", "release", "node_modules", "build"]
 }
