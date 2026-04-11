@@ -50,6 +50,8 @@ Claude Code 사용량을 시각적으로 분석할 수 있는 데스크톱 앱�
 | Styling | Tailwind CSS 4 |
 | Data Fetching | TanStack Query |
 | Test | Vitest |
+| Lint | oxlint (typescript / react / import 플러그인) |
+| Format | Prettier + prettier-plugin-organize-imports |
 | Packaging | electron-builder |
 
 ## 설치 및 실행
@@ -64,12 +66,27 @@ npm run dev
 # 테스트
 npm test
 
+# 린트 (oxlint)
+npm run lint
+npm run lint:fix
+
+# 포맷팅 (Prettier — 미사용 import 자동 제거 + 정렬 포함)
+npm run format
+npm run format:check
+
 # 프로덕션 빌드
 npm run build
 
 # 앱 패키징 (.dmg / .exe)
 npm run package
 ```
+
+## 코드 품질
+
+- **oxlint** — Rust 기반 초고속 린터 (typescript/react/import 플러그인, correctness + suspicious 카테고리)
+- **Prettier** — `printWidth: 100`, double quote, ES5 trailing comma
+- **prettier-plugin-organize-imports** — 포맷할 때 TypeScript organize-imports로 미사용 import 자동 제거 + 정렬
+- 설정: `.oxlintrc.json`, `.prettierrc.json`, `.prettierignore`
 
 ## 프로젝트 구조
 
@@ -114,6 +131,9 @@ claude-analysis/
 ├── build/                   # 앱 아이콘 + 트레이 템플릿 (icon.icns, iconTemplate.png, @2x)
 ├── .github/workflows/
 │   └── release.yml          # CI: 태그 푸시 시 Mac/Win 빌드
+├── .oxlintrc.json           # oxlint 설정
+├── .prettierrc.json         # prettier 설정
+├── .prettierignore
 ├── package.json
 ├── vite.config.ts
 ├── tsconfig.json
