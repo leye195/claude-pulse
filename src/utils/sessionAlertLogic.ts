@@ -73,22 +73,31 @@ export function evaluate(
       next.lastStuckAlertAt = null;
       next.hasFiredCompletionAlert = false;
     } else if (s.isActive) {
-      // still active — check stuck threshold
+      // Still active — check stuck threshold.
+      // Invariant: a session in the "active" branch must have a non-null
+      // activeSince (set on registration or 💤→⚡ transition). The fallback
+      // exists only as a defensive net for clock-skew or unexpected state.
       const since = next.activeSince ?? now;
       next.activeSince = since;
       if (settings.notifications.stuckAlert) {
-        const elapsedMs = now - since;
+        // Math.max guards against negative deltas when the system clock
+        // jumps backwards (NTP correction); a negative elapsed never
+        // crosses the threshold.
+        const elapsedMs = Math.max(0, now - since);
         const thresholdMs = settings.notifications.stuckThresholdMinutes * 60_000;
         const repeatMs = settings.notifications.stuckRepeatMinutes * 60_000;
         if (elapsedMs >= thresholdMs) {
           const lastFired = next.lastStuckAlertAt;
-          const shouldFire = lastFired === null ? true : now - lastFired >= repeatMs;
+          const shouldFire =
+            lastFired === null ? true : now - lastFired >= repeatMs;
           if (shouldFire) {
             alerts.push({
               type: "stuck",
               sessionId: s.sessionId,
               projectName: s.projectName,
-              activeMinutes: Math.floor(elapsedMs / 60_000),
+              // Round (not floor) for user-facing copy: at 10m55s the
+              // notification reads "11분째" not "10분째".
+              activeMinutes: Math.round(elapsedMs / 60_000),
             });
             next.lastStuckAlertAt = now;
           }

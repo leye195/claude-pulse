@@ -13,6 +13,16 @@ function session(id: string, isActive: boolean, projectName = "demo"): SessionIn
   return { sessionId: id, isActive, projectName };
 }
 
+function activeState(id: string, since: number): SessionTrackState {
+  return {
+    sessionId: id,
+    lastStatus: "active",
+    activeSince: since,
+    lastStuckAlertAt: null,
+    hasFiredCompletionAlert: false,
+  };
+}
+
 describe("evaluate — registration", () => {
   it("registers a new active session and starts activeSince", () => {
     const result = evaluate(new Map(), [session("s1", true)], settings, T0);
@@ -56,16 +66,6 @@ describe("evaluate — registration", () => {
 });
 
 describe("evaluate — completion alert (⚡→💤)", () => {
-  function activeState(id: string, since: number): SessionTrackState {
-    return {
-      sessionId: id,
-      lastStatus: "active",
-      activeSince: since,
-      lastStuckAlertAt: null,
-      hasFiredCompletionAlert: false,
-    };
-  }
-
   it("fires completion alert when active session becomes idle", () => {
     const prev = new Map([["s1", activeState("s1", T0)]]);
     const result = evaluate(prev, [session("s1", false)], settings, T0 + 5000);
@@ -107,16 +107,6 @@ describe("evaluate — completion alert (⚡→💤)", () => {
 });
 
 describe("evaluate — stuck alert", () => {
-  function activeState(id: string, since: number): SessionTrackState {
-    return {
-      sessionId: id,
-      lastStatus: "active",
-      activeSince: since,
-      lastStuckAlertAt: null,
-      hasFiredCompletionAlert: false,
-    };
-  }
-
   it("fires stuck alert when active duration exceeds threshold", () => {
     const prev = new Map([["s1", activeState("s1", T0)]]);
     const eleven = T0 + 11 * 60_000;
@@ -164,5 +154,51 @@ describe("evaluate — stuck alert", () => {
     const prev = new Map([["s1", activeState("s1", T0)]]);
     const result = evaluate(prev, [session("s1", true)], custom, T0 + 90_000);
     expect(result.alerts).toHaveLength(1);
+  });
+});
+
+describe("evaluate — multi-session", () => {
+  it("handles independent transitions for multiple sessions in the same tick", () => {
+    const prev = new Map<string, SessionTrackState>([
+      ["s1", activeState("s1", T0)], // about to complete
+      ["s2", activeState("s2", T0)], // will go stuck
+      [
+        "s3",
+        {
+          sessionId: "s3",
+          lastStatus: "idle",
+          activeSince: null,
+          lastStuckAlertAt: null,
+          hasFiredCompletionAlert: true,
+        },
+      ], // idle, no transition
+    ]);
+    const eleven = T0 + 11 * 60_000;
+    const result = evaluate(
+      prev,
+      [
+        session("s1", false, "alpha"),
+        session("s2", true, "beta"),
+        session("s3", false, "gamma"),
+      ],
+      settings,
+      eleven
+    );
+
+    expect(result.alerts).toHaveLength(2);
+    expect(result.alerts).toContainEqual({
+      type: "completion",
+      sessionId: "s1",
+      projectName: "alpha",
+    });
+    expect(result.alerts).toContainEqual({
+      type: "stuck",
+      sessionId: "s2",
+      projectName: "beta",
+      activeMinutes: 11,
+    });
+    expect(result.newState.get("s1")?.lastStatus).toBe("idle");
+    expect(result.newState.get("s2")?.lastStuckAlertAt).toBe(eleven);
+    expect(result.newState.get("s3")?.lastStatus).toBe("idle");
   });
 });
