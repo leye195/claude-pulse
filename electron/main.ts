@@ -9,7 +9,7 @@ import {
   updateSettings,
   onSettingsChange,
 } from "./configStore";
-import type { AppSettings } from "../src/types/settings.js";
+import type { AppSettings, DeepPartial } from "../src/types/settings.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isDev = !app.isPackaged;
@@ -298,7 +298,7 @@ ipcMain.handle("get-sessions", () => readSessions());
 
 ipcMain.handle("get-settings", () => getSettings());
 
-ipcMain.handle("update-settings", (_event, partial: Partial<AppSettings>) => {
+ipcMain.handle("update-settings", (_event, partial: DeepPartial<AppSettings>) => {
   return updateSettings(partial);
 });
 
