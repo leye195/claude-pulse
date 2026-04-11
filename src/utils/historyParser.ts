@@ -12,7 +12,12 @@ export const PROJECT_COLORS = [
 ];
 
 export function parseProjectName(projectPath: string): string {
-  return projectPath.split("/").filter(Boolean).pop() || projectPath;
+  if (!projectPath) return projectPath;
+  const parts = projectPath.split(/[/\\]/).filter(Boolean);
+  if (parts.length === 0) return projectPath;
+  const claudeIdx = parts.indexOf(".claude");
+  if (claudeIdx > 0) return parts[claudeIdx - 1];
+  return parts[parts.length - 1];
 }
 
 export function getProjectSummaries(entries: HistoryEntry[]): ProjectSummary[] {

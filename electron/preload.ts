@@ -17,4 +17,23 @@ contextBridge.exposeInMainWorld("electronAPI", {
       ipcRenderer.removeListener("history-updated", handler);
     };
   },
+  getSessions: () => ipcRenderer.invoke("get-sessions"),
+  onSessionsUpdated: (callback: (data: unknown[]) => void) => {
+    const handler = (_event: Electron.IpcRendererEvent, data: unknown[]) => callback(data);
+    ipcRenderer.on("sessions-updated", handler);
+    return () => {
+      ipcRenderer.removeListener("sessions-updated", handler);
+    };
+  },
+  showMainWindow: () => ipcRenderer.send("show-main-window"),
+  notifyThemeChanged: (theme: "light" | "dark") =>
+    ipcRenderer.send("theme-changed", theme),
+  onThemeChanged: (callback: (theme: "light" | "dark") => void) => {
+    const handler = (_event: Electron.IpcRendererEvent, theme: "light" | "dark") =>
+      callback(theme);
+    ipcRenderer.on("theme-changed", handler);
+    return () => {
+      ipcRenderer.removeListener("theme-changed", handler);
+    };
+  },
 });

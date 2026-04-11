@@ -31,6 +31,22 @@ describe("parseProjectName", () => {
   it("returns input for bare name", () => {
     expect(parseProjectName("web")).toBe("web");
   });
+
+  it("handles Windows backslash path", () => {
+    expect(parseProjectName("D:\\2025\\patrick\\seoul-moment-api")).toBe("seoul-moment-api");
+  });
+
+  it("extracts project name before .claude/worktrees", () => {
+    expect(
+      parseProjectName("D:\\2025\\seoul-moment-api\\.claude\\worktrees\\refactor+admin-article")
+    ).toBe("seoul-moment-api");
+  });
+
+  it("extracts project name before .claude on POSIX path", () => {
+    expect(
+      parseProjectName("/Users/me/code/myapp/.claude/worktrees/feature")
+    ).toBe("myapp");
+  });
 });
 
 describe("getProjectSummaries", () => {

@@ -44,11 +44,27 @@ export interface StatsData {
   totalSpeculationTimeSavedMs: number;
 }
 
+export interface ActiveSession {
+  pid: number;
+  sessionId: string;
+  cwd: string;
+  projectName: string;
+  startedAt: number;
+  name?: string;
+  cpuPercent: number;
+  isActive: boolean;
+}
+
 export interface ElectronAPI {
   getStatsData: () => Promise<StatsData | null>;
   onStatsUpdated: (callback: (data: StatsData) => void) => () => void;
   getHistoryData: () => Promise<HistoryEntry[] | null>;
   onHistoryUpdated: (callback: (data: HistoryEntry[]) => void) => () => void;
+  getSessions: () => Promise<ActiveSession[]>;
+  onSessionsUpdated: (callback: (data: ActiveSession[]) => void) => () => void;
+  showMainWindow: () => void;
+  notifyThemeChanged: (theme: "light" | "dark") => void;
+  onThemeChanged: (callback: (theme: "light" | "dark") => void) => () => void;
 }
 
 declare global {
