@@ -24,9 +24,20 @@ Claude Code 사용량을 시각적으로 분석할 수 있는 데스크톱 앱�
 - **요일별 히트맵** — 요일 × 시간대 사용 패턴 히트맵
 - **도구 호출 차트** — 도구별 호출 횟수 통계
 
+### 메뉴바 트레이 + 팝오버 (macOS)
+- **트레이 아이콘** — 메뉴바 상주, 클릭 시 360x600 팝오버 토글
+- **활성 세션 목록** — `~/.claude/sessions/*.json` 실시간 추적, CPU 사용률로 작업 중(⚡)/대기 중(💤) 구분
+- **누적 통계 카드** — 총 토큰/메시지/세션/도구 호출 (2x2 그리드)
+- **미니 잔디** — 최근 6개월 컨트리뷰션 그래프
+- **최근 7일 바차트** — 일별 토큰 추이
+- **홈 버튼** — 메인 창 빠르게 열기
+- **백그라운드 상주** — 메인 창 닫아도 트레이로 숨김 (Cmd+Q로 완전 종료)
+
 ### 공통
-- **Light/Dark 테마** — 시스템 설정 감지 + 수동 토글
+- **Light/Dark 테마** — 시스템 설정 감지 + 수동 토글, 메인↔팝오버 자동 동기화
 - **자동 갱신** — 30초 간격 + 윈도우 포커스 시 데이터 자동 새로고침
+- **활성 세션 모니터링** — `fs.watch` + 5초 간격 CPU 폴링
+- **크로스 플랫폼 경로** — Windows `\` 경로 및 `.claude/worktrees` 하위 경로에서 프로젝트명 추출 지원
 
 ## 기술 스택
 
@@ -68,10 +79,11 @@ claude-analysis/
 │   ├── main.ts              # Electron main process (IPC, 파일 읽기)
 │   └── preload.ts           # contextBridge (CJS)
 ├── src/
-│   ├── main.tsx             # React 엔트리 (QueryClientProvider)
+│   ├── main.tsx             # React 엔트리 (?popover=1 분기)
 │   ├── App.tsx              # 루트 컴포넌트 (탭 전환, 데이터 오케스트레이션)
 │   ├── index.css            # Tailwind + 테마 CSS 변수
 │   ├── components/
+│   │   ├── PopoverApp.tsx   # 트레이 팝오버 루트 (활성 세션, 통계, 미니 잔디, 7일 차트)
 │   │   ├── TopBar.tsx       # 앱 타이틀 + 요약 뱃지 + 테마 토글
 │   │   ├── TabBar.tsx       # 탭 네비게이션 (사용량 분석 / 프로젝트 활동)
 │   │   ├── SummaryCards.tsx # 사용량 요약 카드 4개
@@ -95,11 +107,11 @@ claude-analysis/
 │   │   └── history.ts       # 프로젝트 활동 타입 정의
 │   └── utils/
 │       ├── statsParser.ts   # 토큰/모델 데이터 변환 유틸
-│       └── historyParser.ts # 프로젝트/히스토리 데이터 변환 유틸
+│       └── historyParser.ts # 프로젝트/히스토리 데이터 변환 유틸 (Windows 경로 지원)
 ├── src/__tests__/
-│   ├── statsParser.test.ts  # statsParser 유닛 테스트 (21개)
-│   └── historyParser.test.ts # historyParser 유닛 테스트 (17개)
-├── build/                   # 앱 아이콘 (icon.icns, icon.png)
+│   ├── statsParser.test.ts  # statsParser 유닛 테스트 (25개)
+│   └── historyParser.test.ts # historyParser 유닛 테스트 (24개)
+├── build/                   # 앱 아이콘 + 트레이 템플릿 (icon.icns, iconTemplate.png, @2x)
 ├── .github/workflows/
 │   └── release.yml          # CI: 태그 푸시 시 Mac/Win 빌드
 ├── package.json
@@ -112,10 +124,11 @@ claude-analysis/
 
 ## 데이터 소스
 
-| 파일 | 용도 | 탭 |
+| 파일 | 용도 | 사용처 |
 |------|------|-----|
-| `~/.claude/stats-cache.json` | 토큰/모델별 사용량 통계 | 사용량 분석 |
-| `~/.claude/history.jsonl` | 세션/프로젝트별 활동 기록 | 프로젝트 활동 |
+| `~/.claude/stats-cache.json` | 토큰/모델별 사용량 통계 | 사용량 분석 탭, 팝오버 |
+| `~/.claude/history.jsonl` | 세션/프로젝트별 활동 기록 | 프로젝트 활동 탭 |
+| `~/.claude/sessions/*.json` | 실행 중 세션 (PID, cwd, sessionId) | 트레이 팝오버 활성 세션 |
 
 앱은 다음 시점에 자동으로 데이터를 다시 읽습니다:
 
