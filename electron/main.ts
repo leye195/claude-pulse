@@ -3,7 +3,13 @@ import { app, BrowserWindow, ipcMain, nativeImage, screen, Tray } from "electron
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { loadSettings } from "./configStore";
+import {
+  loadSettings,
+  getSettings,
+  updateSettings,
+  onSettingsChange,
+} from "./configStore";
+import type { AppSettings } from "../src/types/settings.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isDev = !app.isPackaged;
@@ -290,6 +296,12 @@ ipcMain.handle("get-stats-data", () => readStatsFile());
 ipcMain.handle("get-history-data", () => readHistoryFile());
 ipcMain.handle("get-sessions", () => readSessions());
 
+ipcMain.handle("get-settings", () => getSettings());
+
+ipcMain.handle("update-settings", (_event, partial: Partial<AppSettings>) => {
+  return updateSettings(partial);
+});
+
 ipcMain.on("show-main-window", () => {
   if (!mainWindow) {
     createMainWindow();
@@ -308,6 +320,11 @@ ipcMain.on("theme-changed", (_event, theme: "light" | "dark") => {
 
 app.whenReady().then(() => {
   loadSettings();
+  onSettingsChange((settings) => {
+    for (const win of BrowserWindow.getAllWindows()) {
+      win.webContents.send("settings-updated", settings);
+    }
+  });
   createMainWindow();
   createTray();
   startSessionsMonitor();

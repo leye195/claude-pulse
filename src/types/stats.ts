@@ -1,4 +1,5 @@
 import type { HistoryEntry } from "./history";
+import type { AppSettings } from "./settings";
 
 export interface DailyActivity {
   date: string;
@@ -62,6 +63,9 @@ export interface ElectronAPI {
   onHistoryUpdated: (callback: (data: HistoryEntry[]) => void) => () => void;
   getSessions: () => Promise<ActiveSession[]>;
   onSessionsUpdated: (callback: (data: ActiveSession[]) => void) => () => void;
+  getSettings: () => Promise<AppSettings>;
+  updateSettings: (partial: Partial<AppSettings>) => Promise<AppSettings>;
+  onSettingsUpdated: (callback: (settings: AppSettings) => void) => () => void;
   showMainWindow: () => void;
   notifyThemeChanged: (theme: "light" | "dark") => void;
   onThemeChanged: (callback: (theme: "light" | "dark") => void) => () => void;
