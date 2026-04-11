@@ -8,8 +8,8 @@ import {
   getSettings,
   updateSettings,
   onSettingsChange,
-} from "./configStore";
-import { processSessions, setAlertClickHandler } from "./sessionAlertMonitor";
+} from "./configStore.js";
+import { processSessions, setAlertClickHandler } from "./sessionAlertMonitor.js";
 import type { AppSettings, DeepPartial } from "../src/types/settings.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
