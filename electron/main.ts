@@ -9,6 +9,7 @@ import {
   updateSettings,
   onSettingsChange,
 } from "./configStore";
+import { processSessions, setAlertClickHandler } from "./sessionAlertMonitor";
 import type { AppSettings, DeepPartial } from "../src/types/settings.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -273,6 +274,14 @@ function createTray(): void {
 
 function broadcastSessions(): void {
   const sessions = readSessions();
+  processSessions({
+    sessions: sessions.map((s) => ({
+      sessionId: s.sessionId,
+      isActive: s.isActive,
+      projectName: s.projectName,
+    })),
+    settings: getSettings(),
+  });
   if (popoverWindow && !popoverWindow.isDestroyed()) {
     popoverWindow.webContents.send("sessions-updated", sessions);
   }
@@ -327,6 +336,7 @@ app.whenReady().then(() => {
   });
   createMainWindow();
   createTray();
+  setAlertClickHandler(() => togglePopover());
   startSessionsMonitor();
 });
 
