@@ -337,6 +337,26 @@ ipcMain.on("show-main-window", () => {
   if (popoverWindow?.isVisible()) popoverWindow.hide();
 });
 
+type TabPayload = "stats" | "projects" | "settings";
+
+ipcMain.on("show-main-window-tab", (_event, tab: TabPayload) => {
+  if (!mainWindow) {
+    createMainWindow();
+  } else {
+    mainWindow.show();
+    mainWindow.focus();
+  }
+  const send = () => {
+    mainWindow?.webContents.send("set-active-tab", tab);
+  };
+  if (mainWindow?.webContents.isLoading()) {
+    mainWindow.webContents.once("did-finish-load", send);
+  } else {
+    send();
+  }
+  if (popoverWindow?.isVisible()) popoverWindow.hide();
+});
+
 ipcMain.on("theme-changed", (_event, theme: "light" | "dark") => {
   for (const win of BrowserWindow.getAllWindows()) {
     win.webContents.send("theme-changed", theme);

@@ -1,3 +1,4 @@
+import type { TabType } from "../components/TabBar";
 import type { HistoryEntry } from "./history";
 import type { AppSettings, DeepPartial } from "./settings";
 
@@ -67,6 +68,8 @@ export interface ElectronAPI {
   updateSettings: (partial: DeepPartial<AppSettings>) => Promise<AppSettings>;
   onSettingsUpdated: (callback: (settings: AppSettings) => void) => () => void;
   showMainWindow: () => void;
+  showMainWindowTab: (tab: TabType) => void;
+  onSetActiveTab: (callback: (tab: TabType) => void) => () => void;
   notifyThemeChanged: (theme: "light" | "dark") => void;
   onThemeChanged: (callback: (theme: "light" | "dark") => void) => () => void;
 }

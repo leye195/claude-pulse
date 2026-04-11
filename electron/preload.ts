@@ -35,6 +35,14 @@ contextBridge.exposeInMainWorld("electronAPI", {
     };
   },
   showMainWindow: () => ipcRenderer.send("show-main-window"),
+  showMainWindowTab: (tab: string) => ipcRenderer.send("show-main-window-tab", tab),
+  onSetActiveTab: (callback: (tab: string) => void) => {
+    const handler = (_event: Electron.IpcRendererEvent, tab: string) => callback(tab);
+    ipcRenderer.on("set-active-tab", handler);
+    return () => {
+      ipcRenderer.removeListener("set-active-tab", handler);
+    };
+  },
   notifyThemeChanged: (theme: "light" | "dark") => ipcRenderer.send("theme-changed", theme),
   onThemeChanged: (callback: (theme: "light" | "dark") => void) => {
     const handler = (_event: Electron.IpcRendererEvent, theme: "light" | "dark") => callback(theme);

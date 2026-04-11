@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ContributionGraph } from "./components/ContributionGraph";
 import { DailyChart } from "./components/DailyChart";
 import { EmptyState } from "./components/EmptyState";
@@ -19,6 +19,12 @@ import { useTheme } from "./hooks/useTheme";
 
 export function App() {
   const [activeTab, setActiveTab] = useState<TabType>("stats");
+  useEffect(() => {
+    const unsubscribe = window.electronAPI.onSetActiveTab((tab) => {
+      setActiveTab(tab);
+    });
+    return unsubscribe;
+  }, []);
   const { data, loading, error, retry } = useStatsData();
   const {
     data: historyData,
