@@ -263,7 +263,8 @@ let trayIsAlert = false;
 function setTrayAlert(alert: boolean): void {
   if (!tray || trayIsAlert === alert) return;
   const image = nativeImage.createFromPath(getTrayIconPath(alert));
-  if (!image.isEmpty()) image.setTemplateImage(true);
+  if (image.isEmpty()) return; // keep previous icon, don't flip flag — next tick retries
+  image.setTemplateImage(true);
   tray.setImage(image);
   trayIsAlert = alert;
 }
@@ -287,19 +288,16 @@ function createTray(): void {
 
 function broadcastSessions(): void {
   const sessions = readSessions();
+  const settings = getSettings();
   const { hasStuckSessions } = processSessions({
     sessions: sessions.map((s) => ({
       sessionId: s.sessionId,
       isActive: s.isActive,
       projectName: s.projectName,
     })),
-    settings: getSettings(),
+    settings,
   });
-  if (getSettings().notifications.enabled) {
-    setTrayAlert(hasStuckSessions);
-  } else {
-    setTrayAlert(false);
-  }
+  setTrayAlert(settings.notifications.enabled && hasStuckSessions);
   if (popoverWindow && !popoverWindow.isDestroyed()) {
     popoverWindow.webContents.send("sessions-updated", sessions);
   }
