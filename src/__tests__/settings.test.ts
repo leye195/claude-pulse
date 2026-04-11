@@ -50,4 +50,46 @@ describe("mergeSettings", () => {
     );
     expect(merged.notifications.stuckRepeatMinutes).toBe(1);
   });
+
+  it("falls back to base when stuckThresholdMinutes is NaN", () => {
+    const merged = mergeSettings(
+      { notifications: { stuckThresholdMinutes: NaN } },
+      DEFAULT_SETTINGS
+    );
+    expect(merged.notifications.stuckThresholdMinutes).toBe(10);
+  });
+
+  it("falls back to base when stuckRepeatMinutes is Infinity", () => {
+    const merged = mergeSettings(
+      { notifications: { stuckRepeatMinutes: Infinity } },
+      DEFAULT_SETTINGS
+    );
+    expect(merged.notifications.stuckRepeatMinutes).toBe(30);
+  });
+
+  it("falls back to base when minutes are non-number from corrupted JSON", () => {
+    const merged = mergeSettings(
+      { notifications: { stuckThresholdMinutes: "5" as unknown as number } },
+      DEFAULT_SETTINGS
+    );
+    expect(merged.notifications.stuckThresholdMinutes).toBe(10);
+  });
+
+  it("preserves explicit false on boolean fields (??, not ||)", () => {
+    const merged = mergeSettings(
+      { notifications: { enabled: false, sound: false } },
+      DEFAULT_SETTINGS
+    );
+    expect(merged.notifications.enabled).toBe(false);
+    expect(merged.notifications.sound).toBe(false);
+  });
+
+  it("does not mutate the base object", () => {
+    const baseCopy: AppSettings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+    mergeSettings(
+      { notifications: { stuckThresholdMinutes: 99 } },
+      baseCopy
+    );
+    expect(baseCopy.notifications.stuckThresholdMinutes).toBe(10);
+  });
 });
