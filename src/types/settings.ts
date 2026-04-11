@@ -11,16 +11,16 @@ export interface AppSettings {
   notifications: NotificationSettings;
 }
 
-export const DEFAULT_SETTINGS: AppSettings = {
-  notifications: {
+export const DEFAULT_SETTINGS: AppSettings = Object.freeze({
+  notifications: Object.freeze({
     enabled: true,
     completionAlert: true,
     stuckAlert: true,
     stuckThresholdMinutes: 10,
     stuckRepeatMinutes: 30,
     sound: true,
-  },
-};
+  }),
+}) as AppSettings;
 
 export type DeepPartial<T> = { [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K] };
 

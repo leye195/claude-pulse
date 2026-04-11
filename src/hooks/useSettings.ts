@@ -7,7 +7,7 @@ const QUERY_KEY = ["settings"] as const;
 export function useSettings() {
   const queryClient = useQueryClient();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery<AppSettings>({
     queryKey: QUERY_KEY,
     queryFn: () => window.electronAPI.getSettings(),
     staleTime: Infinity,
@@ -17,8 +17,10 @@ export function useSettings() {
     const unsubscribe = window.electronAPI.onSettingsUpdated((next) => {
       queryClient.setQueryData(QUERY_KEY, next);
     });
+    // Reconcile any push that fired between queryFn resolution and subscribe.
+    refetch();
     return unsubscribe;
-  }, [queryClient]);
+  }, [queryClient, refetch]);
 
   const mutation = useMutation({
     mutationFn: (partial: DeepPartial<AppSettings>) =>
@@ -32,6 +34,8 @@ export function useSettings() {
     settings: data ?? DEFAULT_SETTINGS,
     loading: isLoading,
     update: mutation.mutate,
+    updateAsync: mutation.mutateAsync,
     isSaving: mutation.isPending,
+    error: mutation.error,
   };
 }
