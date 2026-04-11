@@ -3,6 +3,7 @@ import { app, BrowserWindow, ipcMain, nativeImage, screen, Tray } from "electron
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { loadSettings } from "./configStore";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isDev = !app.isPackaged;
@@ -306,6 +307,7 @@ ipcMain.on("theme-changed", (_event, theme: "light" | "dark") => {
 });
 
 app.whenReady().then(() => {
+  loadSettings();
   createMainWindow();
   createTray();
   startSessionsMonitor();

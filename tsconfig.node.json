@@ -7,5 +7,10 @@
     "strict": true,
     "outDir": "dist-electron"
   },
-  "include": ["electron/**/*", "vite.config.ts"]
+  "include": [
+    "electron/**/*",
+    "src/types/settings.ts",
+    "src/utils/sessionAlertLogic.ts",
+    "vite.config.ts"
+  ]
 }
