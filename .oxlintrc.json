@@ -1,0 +1,16 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "react", "import"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "pedantic": "off",
+    "style": "off",
+    "nursery": "off"
+  },
+  "rules": {
+    "import/order": "warn",
+    "no-unused-vars": "warn"
+  },
+  "ignorePatterns": ["dist", "dist-electron", "release", "node_modules", "build"]
+}
