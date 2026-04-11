@@ -3,6 +3,14 @@ import { app, BrowserWindow, ipcMain, nativeImage, screen, Tray } from "electron
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import {
+  loadSettings,
+  getSettings,
+  updateSettings,
+  onSettingsChange,
+} from "./configStore";
+import { processSessions, setAlertClickHandler } from "./sessionAlertMonitor";
+import type { AppSettings, DeepPartial } from "../src/types/settings.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isDev = !app.isPackaged;
@@ -243,14 +251,28 @@ function togglePopover(): void {
   popoverWindow!.webContents.send("sessions-updated", sessions);
 }
 
-function createTray(): void {
-  const iconPath = isDev
-    ? path.join(__dirname, "../../build/iconTemplate.png")
-    : path.join(process.resourcesPath, "build/iconTemplate.png");
+function getTrayIconPath(alert: boolean): string {
+  const filename = alert ? "iconTemplateAlert.png" : "iconTemplate.png";
+  return isDev
+    ? path.join(__dirname, "../../build", filename)
+    : path.join(process.resourcesPath, "build", filename);
+}
 
+let trayIsAlert = false;
+
+function setTrayAlert(alert: boolean): void {
+  if (!tray || trayIsAlert === alert) return;
+  const image = nativeImage.createFromPath(getTrayIconPath(alert));
+  if (image.isEmpty()) return; // keep previous icon, don't flip flag — next tick retries
+  image.setTemplateImage(true);
+  tray.setImage(image);
+  trayIsAlert = alert;
+}
+
+function createTray(): void {
   let image: Electron.NativeImage;
   try {
-    image = nativeImage.createFromPath(iconPath);
+    image = nativeImage.createFromPath(getTrayIconPath(false));
     if (!image.isEmpty()) {
       image.setTemplateImage(true);
     }
@@ -266,6 +288,16 @@ function createTray(): void {
 
 function broadcastSessions(): void {
   const sessions = readSessions();
+  const settings = getSettings();
+  const { hasStuckSessions } = processSessions({
+    sessions: sessions.map((s) => ({
+      sessionId: s.sessionId,
+      isActive: s.isActive,
+      projectName: s.projectName,
+    })),
+    settings,
+  });
+  setTrayAlert(settings.notifications.enabled && hasStuckSessions);
   if (popoverWindow && !popoverWindow.isDestroyed()) {
     popoverWindow.webContents.send("sessions-updated", sessions);
   }
@@ -289,12 +321,38 @@ ipcMain.handle("get-stats-data", () => readStatsFile());
 ipcMain.handle("get-history-data", () => readHistoryFile());
 ipcMain.handle("get-sessions", () => readSessions());
 
+ipcMain.handle("get-settings", () => getSettings());
+
+ipcMain.handle("update-settings", (_event, partial: DeepPartial<AppSettings>) => {
+  return updateSettings(partial);
+});
+
 ipcMain.on("show-main-window", () => {
   if (!mainWindow) {
     createMainWindow();
   } else {
     mainWindow.show();
     mainWindow.focus();
+  }
+  if (popoverWindow?.isVisible()) popoverWindow.hide();
+});
+
+type TabPayload = "stats" | "projects" | "settings";
+
+ipcMain.on("show-main-window-tab", (_event, tab: TabPayload) => {
+  if (!mainWindow) {
+    createMainWindow();
+  } else {
+    mainWindow.show();
+    mainWindow.focus();
+  }
+  const send = () => {
+    mainWindow?.webContents.send("set-active-tab", tab);
+  };
+  if (mainWindow?.webContents.isLoading()) {
+    mainWindow.webContents.once("did-finish-load", send);
+  } else {
+    send();
   }
   if (popoverWindow?.isVisible()) popoverWindow.hide();
 });
@@ -306,8 +364,18 @@ ipcMain.on("theme-changed", (_event, theme: "light" | "dark") => {
 });
 
 app.whenReady().then(() => {
+  loadSettings();
+  onSettingsChange((settings) => {
+    for (const win of BrowserWindow.getAllWindows()) {
+      win.webContents.send("settings-updated", settings);
+    }
+    // Re-evaluate tray badge state immediately when settings change,
+    // instead of waiting for the next 5-second polling tick.
+    broadcastSessions();
+  });
   createMainWindow();
   createTray();
+  setAlertClickHandler(() => togglePopover());
   startSessionsMonitor();
 });
 
