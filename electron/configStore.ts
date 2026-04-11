@@ -1,7 +1,12 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
-import { DEFAULT_SETTINGS, mergeSettings, type AppSettings } from "../src/types/settings.js";
+import {
+  DEFAULT_SETTINGS,
+  mergeSettings,
+  type AppSettings,
+  type DeepPartial,
+} from "../src/types/settings.js";
 
 const SETTINGS_DIR = path.join(os.homedir(), ".claude-pulse");
 const SETTINGS_PATH = path.join(SETTINGS_DIR, "settings.json");
@@ -9,7 +14,7 @@ const BACKUP_PATH = path.join(SETTINGS_DIR, "settings.json.bak");
 
 type Listener = (settings: AppSettings) => void;
 
-let current: AppSettings = DEFAULT_SETTINGS;
+let current: AppSettings = mergeSettings({}, DEFAULT_SETTINGS);
 const listeners = new Set<Listener>();
 
 function ensureDir(): void {
@@ -28,8 +33,8 @@ function writeAtomic(data: AppSettings): void {
 export function loadSettings(): AppSettings {
   try {
     if (!fs.existsSync(SETTINGS_PATH)) {
-      writeAtomic(DEFAULT_SETTINGS);
-      current = DEFAULT_SETTINGS;
+      current = mergeSettings({}, DEFAULT_SETTINGS);
+      writeAtomic(current);
       return current;
     }
     const raw = fs.readFileSync(SETTINGS_PATH, "utf-8");
@@ -42,11 +47,15 @@ export function loadSettings(): AppSettings {
       if (fs.existsSync(SETTINGS_PATH)) {
         fs.copyFileSync(SETTINGS_PATH, BACKUP_PATH);
       }
-    } catch {
-      // ignore backup failure
+    } catch (backupErr) {
+      console.warn("[configStore] backup failed:", backupErr);
     }
-    current = DEFAULT_SETTINGS;
-    writeAtomic(current);
+    current = mergeSettings({}, DEFAULT_SETTINGS);
+    try {
+      writeAtomic(current);
+    } catch (writeErr) {
+      console.warn("[configStore] recovery write failed, using in-memory defaults:", writeErr);
+    }
     return current;
   }
 }
@@ -55,7 +64,7 @@ export function getSettings(): AppSettings {
   return current;
 }
 
-export function updateSettings(partial: Partial<AppSettings>): AppSettings {
+export function updateSettings(partial: DeepPartial<AppSettings>): AppSettings {
   current = mergeSettings(partial, current);
   writeAtomic(current);
   for (const listener of listeners) listener(current);

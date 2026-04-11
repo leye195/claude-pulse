@@ -22,7 +22,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   },
 };
 
-type DeepPartial<T> = { [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K] };
+export type DeepPartial<T> = { [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K] };
 
 function clampMin(value: unknown, min: number, fallback: number): number {
   if (typeof value !== "number" || !Number.isFinite(value)) return fallback;
