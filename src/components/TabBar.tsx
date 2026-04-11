@@ -1,4 +1,4 @@
-export type TabType = "stats" | "projects";
+export type TabType = "stats" | "projects" | "settings";
 
 interface TabBarProps {
   activeTab: TabType;
@@ -8,6 +8,7 @@ interface TabBarProps {
 const TABS: { key: TabType; label: string }[] = [
   { key: "stats", label: "사용량 분석" },
   { key: "projects", label: "프로젝트 활동" },
+  { key: "settings", label: "설정" },
 ];
 
 export function TabBar({ activeTab, onTabChange }: TabBarProps) {

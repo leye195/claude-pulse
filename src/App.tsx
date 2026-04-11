@@ -7,6 +7,7 @@ import { ModelBreakdown } from "./components/ModelBreakdown";
 import { ProjectActivityTrend } from "./components/ProjectActivityTrend";
 import { ProjectBreakdown } from "./components/ProjectBreakdown";
 import { ProjectSummaryCards } from "./components/ProjectSummaryCards";
+import { SettingsTab } from "./components/SettingsTab";
 import { SummaryCards } from "./components/SummaryCards";
 import { TabBar, type TabType } from "./components/TabBar";
 import { ToolCallChart } from "./components/ToolCallChart";
@@ -102,6 +103,8 @@ export function App() {
         {activeTab === "projects" && historyData && historyData.length === 0 && (
           <EmptyState message="프로젝트 활동 기록이 없습니다." />
         )}
+
+        {activeTab === "settings" && <SettingsTab />}
       </div>
     </div>
   );
