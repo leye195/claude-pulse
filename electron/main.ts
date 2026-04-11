@@ -251,14 +251,27 @@ function togglePopover(): void {
   popoverWindow!.webContents.send("sessions-updated", sessions);
 }
 
-function createTray(): void {
-  const iconPath = isDev
-    ? path.join(__dirname, "../../build/iconTemplate.png")
-    : path.join(process.resourcesPath, "build/iconTemplate.png");
+function getTrayIconPath(alert: boolean): string {
+  const filename = alert ? "iconTemplateAlert.png" : "iconTemplate.png";
+  return isDev
+    ? path.join(__dirname, "../../build", filename)
+    : path.join(process.resourcesPath, "build", filename);
+}
 
+let trayIsAlert = false;
+
+function setTrayAlert(alert: boolean): void {
+  if (!tray || trayIsAlert === alert) return;
+  const image = nativeImage.createFromPath(getTrayIconPath(alert));
+  if (!image.isEmpty()) image.setTemplateImage(true);
+  tray.setImage(image);
+  trayIsAlert = alert;
+}
+
+function createTray(): void {
   let image: Electron.NativeImage;
   try {
-    image = nativeImage.createFromPath(iconPath);
+    image = nativeImage.createFromPath(getTrayIconPath(false));
     if (!image.isEmpty()) {
       image.setTemplateImage(true);
     }
@@ -274,7 +287,7 @@ function createTray(): void {
 
 function broadcastSessions(): void {
   const sessions = readSessions();
-  processSessions({
+  const { hasStuckSessions } = processSessions({
     sessions: sessions.map((s) => ({
       sessionId: s.sessionId,
       isActive: s.isActive,
@@ -282,6 +295,11 @@ function broadcastSessions(): void {
     })),
     settings: getSettings(),
   });
+  if (getSettings().notifications.enabled) {
+    setTrayAlert(hasStuckSessions);
+  } else {
+    setTrayAlert(false);
+  }
   if (popoverWindow && !popoverWindow.isDestroyed()) {
     popoverWindow.webContents.send("sessions-updated", sessions);
   }
