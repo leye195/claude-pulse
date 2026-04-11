@@ -67,7 +67,13 @@ export function getSettings(): AppSettings {
 export function updateSettings(partial: DeepPartial<AppSettings>): AppSettings {
   current = mergeSettings(partial, current);
   writeAtomic(current);
-  for (const listener of listeners) listener(current);
+  for (const listener of listeners) {
+    try {
+      listener(current);
+    } catch (err) {
+      console.error("[configStore] settings listener threw:", err);
+    }
+  }
   return current;
 }
 

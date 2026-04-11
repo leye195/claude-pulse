@@ -369,6 +369,9 @@ app.whenReady().then(() => {
     for (const win of BrowserWindow.getAllWindows()) {
       win.webContents.send("settings-updated", settings);
     }
+    // Re-evaluate tray badge state immediately when settings change,
+    // instead of waiting for the next 5-second polling tick.
+    broadcastSessions();
   });
   createMainWindow();
   createTray();
