@@ -1,4 +1,4 @@
-import type { DailyActivity, DailyModelTokens, ModelUsage } from "../types/stats";
+import type { DailyActivity, DailyModelTokens, ModelUsage } from "@/shared/types/stats";
 
 export interface ModelBreakdownEntry {
   name: string;

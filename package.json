@@ -1,5 +1,5 @@
 {
-  "name": "claude-analysis",
+  "name": "claude-pulse",
   "version": "1.0.0",
   "description": "Claude Code usage analytics dashboard",
   "main": "dist-electron/electron/main.js",

@@ -9,13 +9,13 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { HistoryEntry } from "../types/history";
+import type { HistoryEntry } from "@/shared/types/history";
 import {
   filterHistoryByDateRange,
   getProjectDailyActivity,
   getProjectNames,
   PROJECT_COLORS,
-} from "../utils/historyParser";
+} from "@/shared/utils/historyParser";
 
 interface ProjectActivityTrendProps {
   entries: HistoryEntry[];

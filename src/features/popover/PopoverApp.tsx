@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis } from "recharts";
-import { useStatsData } from "../hooks/useStatsData";
-import { useTheme } from "../hooks/useTheme";
-import type { ActiveSession, StatsData } from "../types/stats";
-import { getContributionLevel, getDailyTokensArray } from "../utils/statsParser";
+import { useStatsData } from "@/shared/hooks/useStatsData";
+import { useTheme } from "@/shared/hooks/useTheme";
+import type { ActiveSession, StatsData } from "@/shared/types/stats";
+import { getContributionLevel, getDailyTokensArray } from "@/shared/utils/statsParser";
 
 const TOOLTIP_STYLE = {
   background: "var(--bg-card)",
@@ -180,7 +180,7 @@ export function PopoverApp() {
   return (
     <div className="w-[360px] h-[600px] bg-(--bg-primary) text-(--text-primary) overflow-y-auto">
       <header className="sticky top-0 z-10 h-10 px-4 flex items-center justify-between border-b border-(--border) bg-(--bg-primary)">
-        <span className="text-sm font-semibold">Claude Analysis</span>
+        <span className="text-sm font-semibold">Claude Pulse</span>
         <div className="flex items-center gap-1">
           <button
             type="button"

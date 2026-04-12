@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
-import type { ModelUsage } from "../types/stats";
-import { getModelBreakdown } from "../utils/statsParser";
+import type { ModelUsage } from "@/shared/types/stats";
+import { getModelBreakdown } from "@/shared/utils/statsParser";
 
 interface ModelBreakdownProps {
   modelUsage: Record<string, ModelUsage>;

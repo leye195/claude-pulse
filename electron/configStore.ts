@@ -6,7 +6,7 @@ import {
   mergeSettings,
   type AppSettings,
   type DeepPartial,
-} from "../src/types/settings.js";
+} from "../src/shared/types/settings.js";
 
 const SETTINGS_DIR = path.join(os.homedir(), ".claude-pulse");
 const SETTINGS_PATH = path.join(SETTINGS_DIR, "settings.json");
