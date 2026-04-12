@@ -9,8 +9,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { DailyModelTokens } from "../types/stats";
-import { filterByDateRange, formatModelName, getDailyTokensArray } from "../utils/statsParser";
+import type { DailyModelTokens } from "@/types/stats";
+import { filterByDateRange, formatModelName, getDailyTokensArray } from "@/utils/statsParser";
 
 interface DailyChartProps {
   dailyModelTokens: DailyModelTokens[];

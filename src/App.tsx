@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
-import { ContributionGraph } from "./components/ContributionGraph";
-import { DailyChart } from "./components/DailyChart";
-import { EmptyState } from "./components/EmptyState";
-import { HourlyChart } from "./components/HourlyChart";
-import { ModelBreakdown } from "./components/ModelBreakdown";
-import { ProjectActivityTrend } from "./components/ProjectActivityTrend";
-import { ProjectBreakdown } from "./components/ProjectBreakdown";
-import { ProjectSummaryCards } from "./components/ProjectSummaryCards";
-import { SettingsTab } from "./components/SettingsTab";
-import { SummaryCards } from "./components/SummaryCards";
-import { TabBar, type TabType } from "./components/TabBar";
-import { ToolCallChart } from "./components/ToolCallChart";
-import { TopBar } from "./components/TopBar";
-import { WeekdayHeatmap } from "./components/WeekdayHeatmap";
-import { useHistoryData } from "./hooks/useHistoryData";
-import { useStatsData } from "./hooks/useStatsData";
-import { useTheme } from "./hooks/useTheme";
+import { ContributionGraph } from "@/components/ContributionGraph";
+import { DailyChart } from "@/components/DailyChart";
+import { EmptyState } from "@/components/EmptyState";
+import { HourlyChart } from "@/components/HourlyChart";
+import { ModelBreakdown } from "@/components/ModelBreakdown";
+import { ProjectActivityTrend } from "@/components/ProjectActivityTrend";
+import { ProjectBreakdown } from "@/components/ProjectBreakdown";
+import { ProjectSummaryCards } from "@/components/ProjectSummaryCards";
+import { SettingsTab } from "@/components/SettingsTab";
+import { SummaryCards } from "@/components/SummaryCards";
+import { TabBar, type TabType } from "@/components/TabBar";
+import { ToolCallChart } from "@/components/ToolCallChart";
+import { TopBar } from "@/components/TopBar";
+import { WeekdayHeatmap } from "@/components/WeekdayHeatmap";
+import { useHistoryData } from "@/hooks/useHistoryData";
+import { useStatsData } from "@/hooks/useStatsData";
+import { useTheme } from "@/hooks/useTheme";
 
 export function App() {
   const [activeTab, setActiveTab] = useState<TabType>("stats");

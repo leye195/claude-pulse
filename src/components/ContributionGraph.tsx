@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import type { DailyModelTokens } from "../types/stats";
-import { getContributionLevel, getDailyTokensArray } from "../utils/statsParser";
+import type { DailyModelTokens } from "@/types/stats";
+import { getContributionLevel, getDailyTokensArray } from "@/utils/statsParser";
 
 interface ContributionGraphProps {
   dailyModelTokens: DailyModelTokens[];

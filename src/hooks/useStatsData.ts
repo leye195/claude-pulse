@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import type { StatsData } from "../types/stats";
+import type { StatsData } from "@/types/stats";
 
 async function fetchStats(): Promise<StatsData | null> {
   return window.electronAPI.getStatsData();

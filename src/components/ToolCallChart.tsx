@@ -10,8 +10,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { DailyActivity } from "../types/stats";
-import { filterByDateRange, getToolCallData } from "../utils/statsParser";
+import type { DailyActivity } from "@/types/stats";
+import { filterByDateRange, getToolCallData } from "@/utils/statsParser";
 
 interface ToolCallChartProps {
   dailyActivity: DailyActivity[];

@@ -1,5 +1,5 @@
-import type { StatsData } from "../types/stats";
-import { getTotalTokensForDate } from "../utils/statsParser";
+import type { StatsData } from "@/types/stats";
+import { getTotalTokensForDate } from "@/utils/statsParser";
 
 interface SummaryCardsProps {
   data: StatsData;

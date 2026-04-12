@@ -1,6 +1,6 @@
-import type { TabType } from "../components/TabBar";
-import type { HistoryEntry } from "./history";
-import type { AppSettings, DeepPartial } from "./settings";
+import type { TabType } from "@/components/TabBar";
+import type { HistoryEntry } from "@/types/history";
+import type { AppSettings, DeepPartial } from "@/types/settings";
 
 export interface DailyActivity {
   date: string;

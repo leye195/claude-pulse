@@ -1,4 +1,4 @@
-import type { HistoryEntry, ProjectSummary } from "../types/history";
+import type { HistoryEntry, ProjectSummary } from "@/types/history";
 
 export const PROJECT_COLORS = [
   "#3b82f6", // blue

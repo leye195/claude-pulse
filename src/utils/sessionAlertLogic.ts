@@ -1,4 +1,4 @@
-import type { AppSettings } from "../types/settings";
+import type { AppSettings } from "@/types/settings";
 
 export interface SessionInput {
   sessionId: string;
@@ -17,11 +17,11 @@ export interface SessionTrackState {
 export type Alert =
   | { type: "completion"; sessionId: string; projectName: string }
   | {
-      type: "stuck";
-      sessionId: string;
-      projectName: string;
-      activeMinutes: number;
-    };
+    type: "stuck";
+    sessionId: string;
+    projectName: string;
+    activeMinutes: number;
+  };
 
 export interface EvaluateResult {
   newState: Map<string, SessionTrackState>;

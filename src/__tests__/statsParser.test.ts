@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { DailyActivity, DailyModelTokens, ModelUsage } from "../types/stats";
+import type { DailyActivity, DailyModelTokens, ModelUsage } from "@/types/stats";
 import {
   filterByDateRange,
   formatModelName,
@@ -8,7 +8,7 @@ import {
   getModelBreakdown,
   getToolCallData,
   getTotalTokensForDate,
-} from "../utils/statsParser";
+} from "@/utils/statsParser";
 
 const sampleDailyTokens: DailyModelTokens[] = [
   {

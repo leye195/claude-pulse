@@ -1,4 +1,4 @@
-import { ThemeToggle } from "./ThemeToggle";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface TopBarProps {
   totalMessages: number;

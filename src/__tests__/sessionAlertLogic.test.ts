@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_SETTINGS, type AppSettings } from "../types/settings";
+import { DEFAULT_SETTINGS, type AppSettings } from "@/types/settings";
 import {
   evaluate,
   type SessionInput,
   type SessionTrackState,
-} from "../utils/sessionAlertLogic";
+} from "@/utils/sessionAlertLogic";
 
 const settings: AppSettings = DEFAULT_SETTINGS;
 const T0 = 1_700_000_000_000;

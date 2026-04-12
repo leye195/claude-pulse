@@ -5,7 +5,10 @@
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "outDir": "dist-electron"
+    "outDir": "dist-electron",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": [
     "electron/**/*",

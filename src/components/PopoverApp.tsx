@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis } from "recharts";
-import { useStatsData } from "../hooks/useStatsData";
-import { useTheme } from "../hooks/useTheme";
-import type { ActiveSession, StatsData } from "../types/stats";
-import { getContributionLevel, getDailyTokensArray } from "../utils/statsParser";
+import { useStatsData } from "@/hooks/useStatsData";
+import { useTheme } from "@/hooks/useTheme";
+import type { ActiveSession, StatsData } from "@/types/stats";
+import { getContributionLevel, getDailyTokensArray } from "@/utils/statsParser";
 
 const TOOLTIP_STYLE = {
   background: "var(--bg-card)",
