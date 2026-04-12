@@ -1,4 +1,4 @@
-# Claude Analysis
+# Claude Pulse
 
 Claude Code 사용 통계를 시각화하는 Electron 데스크톱 앱.
 

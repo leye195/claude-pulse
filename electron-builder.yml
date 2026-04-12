@@ -1,5 +1,5 @@
-appId: com.claude-analysis.app
-productName: Claude Analysis
+appId: com.claude-pulse.app
+productName: Claude Pulse
 directories:
   buildResources: build
   output: release

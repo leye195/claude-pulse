@@ -281,7 +281,7 @@ function createTray(): void {
   }
 
   tray = new Tray(image);
-  tray.setToolTip("Claude Analysis");
+  tray.setToolTip("Claude Pulse");
   tray.on("click", () => togglePopover());
   tray.on("right-click", () => togglePopover());
 }
