@@ -1,10 +1,10 @@
 import type { StatsData } from "@/shared/types/stats";
 import { EmptyState } from "@/shared/components/EmptyState";
-import { ContributionGraph } from "@/features/stats/ContributionGraph";
-import { DailyChart } from "@/features/stats/DailyChart";
-import { ModelBreakdown } from "@/features/stats/ModelBreakdown";
-import { SummaryCards } from "@/features/stats/SummaryCards";
-import { ToolCallChart } from "@/features/stats/ToolCallChart";
+import { ContributionGraph } from "./components/ContributionGraph";
+import { DailyChart } from "./components/DailyChart";
+import { ModelBreakdown } from "./components/ModelBreakdown";
+import { SummaryCards } from "./components/SummaryCards";
+import { ToolCallChart } from "./components/ToolCallChart";
 
 interface StatsTabProps {
   data: StatsData | null;
