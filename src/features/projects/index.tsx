@@ -1,10 +1,10 @@
 import type { HistoryEntry } from "@/shared/types/history";
 import { EmptyState } from "@/shared/components/EmptyState";
-import { HourlyChart } from "@/features/projects/HourlyChart";
-import { ProjectActivityTrend } from "@/features/projects/ProjectActivityTrend";
-import { ProjectBreakdown } from "@/features/projects/ProjectBreakdown";
-import { ProjectSummaryCards } from "@/features/projects/ProjectSummaryCards";
-import { WeekdayHeatmap } from "@/features/projects/WeekdayHeatmap";
+import { HourlyChart } from "./components/HourlyChart";
+import { ProjectActivityTrend } from "./components/ProjectActivityTrend";
+import { ProjectBreakdown } from "./components/ProjectBreakdown";
+import { ProjectSummaryCards } from "./components/ProjectSummaryCards";
+import { WeekdayHeatmap } from "./components/WeekdayHeatmap";
 
 interface ProjectsTabProps {
   data: HistoryEntry[] | null;

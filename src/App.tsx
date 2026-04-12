@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { ProjectsTab } from "@/features/projects/ProjectsTab";
-import { SettingsTab } from "@/features/settings/SettingsTab";
-import { StatsTab } from "@/features/stats/StatsTab";
+import { ProjectsTab } from "@/features/projects";
+import { SettingsTab } from "@/features/settings";
+import { StatsTab } from "@/features/stats";
 import { TabBar, type TabType } from "@/shared/components/TabBar";
 import { TopBar } from "@/shared/components/TopBar";
 import { useHistoryData } from "@/shared/hooks/useHistoryData";
