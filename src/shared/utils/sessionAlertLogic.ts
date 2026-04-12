@@ -1,4 +1,4 @@
-import type { AppSettings } from "@/types/settings";
+import type { AppSettings } from "@/shared/types/settings";
 
 export interface SessionInput {
   sessionId: string;

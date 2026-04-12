@@ -9,12 +9,12 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { HistoryEntry } from "@/types/history";
+import type { HistoryEntry } from "@/shared/types/history";
 import {
   getHourlyActivityByProject,
   getProjectNames,
   PROJECT_COLORS,
-} from "@/utils/historyParser";
+} from "@/shared/utils/historyParser";
 
 interface HourlyChartProps {
   entries: HistoryEntry[];

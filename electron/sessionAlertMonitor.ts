@@ -4,8 +4,8 @@ import {
   type Alert,
   type SessionInput,
   type SessionTrackState,
-} from "../src/utils/sessionAlertLogic.js";
-import type { AppSettings } from "../src/types/settings.js";
+} from "../src/shared/utils/sessionAlertLogic.js";
+import type { AppSettings } from "../src/shared/types/settings.js";
 
 let state = new Map<string, SessionTrackState>();
 let onClickHandler: (() => void) | null = null;

@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "@/App";
-import { PopoverApp } from "@/components/PopoverApp";
+import { PopoverApp } from "@/features/popover/PopoverApp";
 import "./index.css";
 
 const queryClient = new QueryClient({

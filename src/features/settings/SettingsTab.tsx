@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useSettings } from "@/hooks/useSettings";
-import type { NotificationSettings } from "@/types/settings";
+import { useSettings } from "@/shared/hooks/useSettings";
+import type { NotificationSettings } from "@/shared/types/settings";
 
 function ToggleRow({
   label,

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_SETTINGS, mergeSettings, type AppSettings } from "@/types/settings";
+import { DEFAULT_SETTINGS, mergeSettings, type AppSettings } from "@/shared/types/settings";
 
 describe("DEFAULT_SETTINGS", () => {
   it("has expected defaults", () => {

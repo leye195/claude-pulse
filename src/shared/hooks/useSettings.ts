@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { DEFAULT_SETTINGS, type AppSettings, type DeepPartial } from "@/types/settings";
+import { DEFAULT_SETTINGS, type AppSettings, type DeepPartial } from "@/shared/types/settings";
 
 const QUERY_KEY = ["settings"] as const;
 

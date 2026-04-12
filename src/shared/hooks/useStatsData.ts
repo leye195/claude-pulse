@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import type { StatsData } from "@/types/stats";
+import type { StatsData } from "@/shared/types/stats";
 
 async function fetchStats(): Promise<StatsData | null> {
   return window.electronAPI.getStatsData();
@@ -9,7 +9,7 @@ async function fetchStats(): Promise<StatsData | null> {
 export function useStatsData() {
   const queryClient = useQueryClient();
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch, status } = useQuery({
     queryKey: ["stats"],
     queryFn: fetchStats,
     refetchInterval: 30_000,
@@ -34,5 +34,6 @@ export function useStatsData() {
         ? "Claude Code 사용 데이터가 없습니다. ~/.claude/stats-cache.json 파일을 찾을 수 없습니다."
         : null,
     retry: refetch,
+    status,
   };
 }

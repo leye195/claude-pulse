@@ -12,8 +12,8 @@
   },
   "include": [
     "electron/**/*",
-    "src/types/settings.ts",
-    "src/utils/sessionAlertLogic.ts",
+    "src/shared/types/settings.ts",
+    "src/shared/utils/sessionAlertLogic.ts",
     "vite.config.ts"
   ]
 }

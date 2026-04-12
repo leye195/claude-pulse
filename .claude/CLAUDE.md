@@ -40,38 +40,33 @@ npm run test:watch   # 테스트 워치 모드
 
 ```
 electron/
-  main.ts          # Electron 메인 프로세스 (IPC 핸들러, 파일 I/O)
-  preload.ts        # Context bridge (electronAPI 노출)
+  main.ts              # Electron 메인 프로세스 (IPC 핸들러, 파일 I/O)
+  preload.ts           # Context bridge (electronAPI 노출)
+  configStore.ts       # 설정 파일 읽기/쓰기
+  sessionAlertMonitor.ts # 세션 알림 모니터링
 src/
-  App.tsx            # 루트 컴포넌트 (탭 전환, 데이터 오케스트레이션)
-  main.tsx           # React 엔트리 (QueryClientProvider)
-  index.css          # Tailwind + CSS 변수 (라이트/다크 테마)
-  types/
-    stats.ts         # StatsData, ElectronAPI 인터페이스
-    history.ts       # HistoryEntry, ProjectSummary 인터페이스
-  hooks/
-    useStatsData.ts  # stats-cache.json 데이터 훅
-    useHistoryData.ts # history.jsonl 데이터 훅
-    useTheme.ts      # 테마 상태 (localStorage 저장)
-  utils/
-    statsParser.ts   # 토큰/모델 데이터 변환 함수
-    historyParser.ts # 프로젝트/히스토리 데이터 변환 함수
-  components/
-    TopBar.tsx       # 헤더 (총 메시지/세션 + 테마 토글)
-    TabBar.tsx       # 탭 네비게이션 (사용량 분석 / 프로젝트 활동)
-    SummaryCards.tsx  # 사용량 요약 카드 4개
-    ContributionGraph.tsx  # GitHub 스타일 잔디 히트맵 (SVG)
-    DailyChart.tsx   # 일별 토큰 바차트 (기간 필터 + 모델별 스택)
-    ModelBreakdown.tsx # 모델별 도넛 파이차트
-    ProjectSummaryCards.tsx  # 프로젝트 요약 카드 4개
-    ProjectBreakdown.tsx    # 프로젝트별 도넛 파이차트
-    ProjectActivityTrend.tsx # 프로젝트별 활동 추이 바차트
-    HourlyChart.tsx  # 시간대별 사용 패턴 바차트
-    ThemeToggle.tsx   # 라이트/다크 토글 버튼
-    EmptyState.tsx   # 에러/빈 상태 UI
-  __tests__/
-    statsParser.test.ts    # statsParser 유닛 테스트 (21개)
-    historyParser.test.ts  # historyParser 유닛 테스트 (17개)
+  App.tsx              # 루트 컴포넌트 (탭 전환, 데이터 오케스트레이션)
+  main.tsx             # React 엔트리 (QueryClientProvider)
+  index.css            # Tailwind + CSS 변수 (라이트/다크 테마)
+  features/
+    stats/             # 사용량 분석 탭
+      StatsTab.tsx     # 탭 화면 컴포넌트
+      SummaryCards.tsx, ContributionGraph.tsx, DailyChart.tsx,
+      ModelBreakdown.tsx, ToolCallChart.tsx
+    projects/          # 프로젝트 활동 탭
+      ProjectsTab.tsx  # 탭 화면 컴포넌트
+      ProjectSummaryCards.tsx, ProjectActivityTrend.tsx,
+      ProjectBreakdown.tsx, HourlyChart.tsx, WeekdayHeatmap.tsx
+    settings/          # 설정 탭
+      SettingsTab.tsx
+    popover/           # 트레이 팝오버
+      PopoverApp.tsx
+  shared/
+    components/        # 공용 UI (EmptyState, TabBar, TopBar, ThemeToggle)
+    hooks/             # 공용 훅 (useStatsData, useHistoryData, useTheme, useSettings)
+    types/             # 공용 타입 (stats, history, settings)
+    utils/             # 공용 유틸 (statsParser, historyParser, sessionAlertLogic)
+  __tests__/           # 유닛 테스트
 ```
 
 ## 코딩 컨벤션

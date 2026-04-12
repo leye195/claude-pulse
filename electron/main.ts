@@ -10,7 +10,7 @@ import {
   onSettingsChange,
 } from "./configStore.js";
 import { processSessions, setAlertClickHandler } from "./sessionAlertMonitor.js";
-import type { AppSettings, DeepPartial } from "../src/types/settings.js";
+import type { AppSettings, DeepPartial } from "../src/shared/types/settings.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isDev = !app.isPackaged;
