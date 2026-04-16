@@ -79,7 +79,7 @@ async function walkJsonlFiles(): Promise<WalkResult> {
       if (Number.isNaN(ts)) continue;
 
       const date = entry.timestamp.slice(0, 10);
-      const hour = new Date(entry.timestamp).getHours().toString();
+      const hour = new Date(entry.timestamp).getUTCHours().toString();
       const entrySessionId = entry.sessionId ?? sessionId;
 
       // Count assistant messages per day
