@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import readline from "readline";
 import {
   loadDailyUsageData,
   getClaudePaths,
@@ -73,24 +74,26 @@ async function walkJsonlFiles(): Promise<WalkResult> {
   }
 
   for (const { file: filePath } of files) {
-    let content: string;
+    let stream: fs.ReadStream;
     try {
-      content = await fs.promises.readFile(filePath, "utf-8");
+      stream = fs.createReadStream(filePath, { encoding: "utf-8" });
     } catch {
       continue;
     }
 
     const sessionId = path.basename(filePath, ".jsonl");
+    const rl = readline.createInterface({ input: stream, crlfDelay: Infinity });
 
-    for (const line of content.split("\n")) {
-      if (!line.trim()) continue;
+    try {
+      for await (const line of rl) {
+        if (!line.trim()) continue;
 
-      let entry: JsonlEntry;
-      try {
-        entry = JSON.parse(line) as JsonlEntry;
-      } catch {
-        continue;
-      }
+        let entry: JsonlEntry;
+        try {
+          entry = JSON.parse(line) as JsonlEntry;
+        } catch {
+          continue;
+        }
 
       if (entry.type !== "assistant" || !entry.timestamp) continue;
 
@@ -178,6 +181,9 @@ async function walkJsonlFiles(): Promise<WalkResult> {
           result.modelUsage.set(model, { ...tokens });
         }
       }
+      }
+    } catch {
+      continue;
     }
   }
 
