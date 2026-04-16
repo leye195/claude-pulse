@@ -2,7 +2,7 @@
 
 Claude Code 사용량을 시각적으로 분석할 수 있는 데스크톱 앱입니다.
 
-`~/.claude/stats-cache.json`과 `~/.claude/history.jsonl` 데이터를 기반으로 사용량 분석과 프로젝트별 활동 분석을 제공합니다.
+`~/.claude/projects/**/*.jsonl` 원본 세션 로그를 [ccusage](https://github.com/ryoppippi/ccusage) 라이브러리로 직접 파싱하여 항상 최신 사용량 + USD 비용을 표시합니다.
 
 <!-- 스크린샷 추가 예정 -->
 <!-- ![Screenshot](docs/screenshot.png) -->
@@ -14,7 +14,8 @@ Claude Code 사용량을 시각적으로 분석할 수 있는 데스크톱 앱�
 - **일별 토큰 차트** — 바 차트로 일별 추세 확인 (7일/30일/전체 필터)
 - **모델별 스택 뷰** — Opus/Sonnet/Haiku 모델별 사용량을 색상으로 구분
 - **모델별 파이 차트** — 전체 기간 모델별 토큰 사용 비율
-- **요약 카드** — 최근 토큰, 메시지, 총 세션, 사용 기간
+- **요약 카드** — 최근 토큰, 메시지, 오늘 비용(USD), 총 비용
+- **모델별 비용** — 모델 범례에 USD 비용 표시
 
 ### 프로젝트 활동 탭
 - **프로젝트 요약 카드** — 총 프로젝트, 총 세션, 총 대화 턴, 가장 활발한 프로젝트
@@ -49,6 +50,7 @@ Claude Code 사용량을 시각적으로 분석할 수 있는 데스크톱 앱�
 | Chart | Recharts |
 | Styling | Tailwind CSS 4 |
 | Data Fetching | TanStack Query |
+| Usage Analytics | ccusage (JSONL 파싱 + LiteLLM 비용 계산) |
 | Test | Vitest |
 | Lint | oxlint (typescript / react / import 플러그인) |
 | Format | Prettier + prettier-plugin-organize-imports |
@@ -93,41 +95,30 @@ npm run package
 ```
 claude-analysis/
 ├── electron/
-│   ├── main.ts              # Electron main process (IPC, 파일 읽기)
+│   ├── main.ts              # Electron main process (IPC, 윈도우 관리)
+│   ├── statsAdapter.ts      # ccusage + JSONL walker → StatsData 어댑터
+│   ├── configStore.ts       # 설정 저장/로드
+│   ├── sessionAlertMonitor.ts # 세션 알림 모니터
 │   └── preload.ts           # contextBridge (CJS)
 ├── src/
 │   ├── main.tsx             # React 엔트리 (?popover=1 분기)
 │   ├── App.tsx              # 루트 컴포넌트 (탭 전환, 데이터 오케스트레이션)
 │   ├── index.css            # Tailwind + 테마 CSS 변수
-│   ├── components/
-│   │   ├── PopoverApp.tsx   # 트레이 팝오버 루트 (활성 세션, 통계, 미니 잔디, 7일 차트)
-│   │   ├── TopBar.tsx       # 앱 타이틀 + 요약 뱃지 + 테마 토글
-│   │   ├── TabBar.tsx       # 탭 네비게이션 (사용량 분석 / 프로젝트 활동)
-│   │   ├── SummaryCards.tsx # 사용량 요약 카드 4개
-│   │   ├── ContributionGraph.tsx  # 잔디 heatmap (SVG)
-│   │   ├── DailyChart.tsx   # 일별 바 차트 + 모델별 스택
-│   │   ├── ModelBreakdown.tsx # 모델별 파이 차트
-│   │   ├── ProjectSummaryCards.tsx  # 프로젝트 요약 카드 4개
-│   │   ├── ProjectBreakdown.tsx    # 프로젝트별 도넛 파이 차트
-│   │   ├── ProjectActivityTrend.tsx # 프로젝트별 활동 추이
-│   │   ├── HourlyChart.tsx  # 시간대별 사용 패턴
-│   │   ├── WeekdayHeatmap.tsx # 요일별 히트맵
-│   │   ├── ToolCallChart.tsx # 도구 호출 통계
-│   │   ├── ThemeToggle.tsx  # 테마 전환 버튼
-│   │   └── EmptyState.tsx   # 빈 상태 / 에러 UI
-│   ├── hooks/
-│   │   ├── useStatsData.ts  # stats-cache.json 데이터 훅
-│   │   ├── useHistoryData.ts # history.jsonl 데이터 훅
-│   │   └── useTheme.ts     # 테마 상태 관리
-│   ├── types/
-│   │   ├── stats.ts         # 사용량 분석 타입 정의
-│   │   └── history.ts       # 프로젝트 활동 타입 정의
-│   └── utils/
-│       ├── statsParser.ts   # 토큰/모델 데이터 변환 유틸
-│       └── historyParser.ts # 프로젝트/히스토리 데이터 변환 유틸 (Windows 경로 지원)
-├── src/__tests__/
-│   ├── statsParser.test.ts  # statsParser 유닛 테스트 (25개)
-│   └── historyParser.test.ts # historyParser 유닛 테스트 (24개)
+│   ├── features/
+│   │   ├── stats/           # 사용량 분석 기능
+│   │   │   └── components/  # SummaryCards, ContributionGraph, DailyChart, ModelBreakdown 등
+│   │   ├── projects/        # 프로젝트 활동 기능
+│   │   │   └── components/  # ProjectSummaryCards, ProjectBreakdown, HourlyChart 등
+│   │   ├── popover/         # 트레이 팝오버
+│   │   │   └── components/  # PopoverApp, SessionList 등
+│   │   └── settings/        # 설정 기능
+│   │       └── components/  # SettingsPanel
+│   ├── shared/
+│   │   ├── components/      # TopBar, TabBar, ThemeToggle, EmptyState
+│   │   ├── hooks/           # useStatsData, useHistoryData, useTheme, useSettings
+│   │   ├── types/           # stats.ts, history.ts, settings.ts, tab.ts
+│   │   └── utils/           # statsParser.ts, historyParser.ts
+│   └── __tests__/           # 유닛 테스트 (statsParser, historyParser, settings 등)
 ├── build/                   # 앱 아이콘 + 트레이 템플릿 (icon.icns, iconTemplate.png, @2x)
 ├── .github/workflows/
 │   └── release.yml          # CI: 태그 푸시 시 Mac/Win 빌드
@@ -146,9 +137,14 @@ claude-analysis/
 
 | 파일 | 용도 | 사용처 |
 |------|------|-----|
-| `~/.claude/stats-cache.json` | 토큰/모델별 사용량 통계 | 사용량 분석 탭, 팝오버 |
+| `~/.claude/projects/**/*.jsonl` | 원본 세션 로그 (토큰, 비용, 메시지, 도구 호출) | 사용량 분석 탭, 팝오버 |
 | `~/.claude/history.jsonl` | 세션/프로젝트별 활동 기록 | 프로젝트 활동 탭 |
 | `~/.claude/sessions/*.json` | 실행 중 세션 (PID, cwd, sessionId) | 트레이 팝오버 활성 세션 |
+
+JSONL 파싱은 `electron/statsAdapter.ts`에서 처리:
+- **ccusage** `loadDailyUsageData()` → LiteLLM 최신 가격표로 USD 비용 계산
+- **커스텀 walker** → 메시지 수, 도구 호출 수, 시간대 분포, 세션 정보 추출
+- 결과를 30초 TTL 인메모리 캐시로 보관
 
 앱은 다음 시점에 자동으로 데이터를 다시 읽습니다:
 

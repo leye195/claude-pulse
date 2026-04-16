@@ -4,6 +4,7 @@ export interface ModelBreakdownEntry {
   name: string;
   tokens: number;
   percentage: number;
+  costUSD: number;
 }
 
 export interface DailyTokenEntry {
@@ -73,6 +74,7 @@ export function getModelBreakdown(modelUsage: Record<string, ModelUsage>): Model
   const entries = Object.entries(modelUsage).map(([modelId, usage]) => ({
     name: formatModelName(modelId),
     tokens: usage.inputTokens + usage.outputTokens,
+    costUSD: usage.costUSD,
   }));
 
   const total = entries.reduce((sum, e) => sum + e.tokens, 0);

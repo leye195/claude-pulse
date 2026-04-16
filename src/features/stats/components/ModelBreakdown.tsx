@@ -69,6 +69,11 @@ export function ModelBreakdown({ modelUsage }: ModelBreakdownProps) {
               <span className="text-xs text-(--text-secondary)">
                 {entry.percentage}% ({entry.tokens.toLocaleString()})
               </span>
+              {entry.costUSD > 0 && (
+                <span className="text-xs text-emerald-400">
+                  ${entry.costUSD >= 1 ? entry.costUSD.toFixed(2) : entry.costUSD.toFixed(3)}
+                </span>
+              )}
             </div>
           ))}
         </div>

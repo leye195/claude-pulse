@@ -1,4 +1,5 @@
-export type TabType = "stats" | "projects" | "settings";
+import type { TabType } from "@/shared/types/tab";
+export type { TabType };
 
 interface TabBarProps {
   activeTab: TabType;

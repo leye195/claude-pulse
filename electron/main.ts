@@ -10,6 +10,7 @@ import {
   onSettingsChange,
 } from "./configStore.js";
 import { processSessions, setAlertClickHandler } from "./sessionAlertMonitor.js";
+import { loadStatsData } from "./statsAdapter.js";
 import type { AppSettings, DeepPartial } from "../src/shared/types/settings.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -20,25 +21,12 @@ interface AppState {
 }
 const state: AppState = { isQuitting: false };
 
-function getStatsPath(): string {
-  return path.join(app.getPath("home"), ".claude", "stats-cache.json");
-}
-
 function getHistoryPath(): string {
   return path.join(app.getPath("home"), ".claude", "history.jsonl");
 }
 
 function getSessionsDir(): string {
   return path.join(app.getPath("home"), ".claude", "sessions");
-}
-
-function readStatsFile(): unknown | null {
-  try {
-    const raw = fs.readFileSync(getStatsPath(), "utf-8");
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
 }
 
 function readHistoryFile(): unknown[] | null {
@@ -153,8 +141,8 @@ function createMainWindow(): void {
     mainWindow.loadFile(path.join(__dirname, "../../dist/index.html"));
   }
 
-  mainWindow.on("focus", () => {
-    const data = readStatsFile();
+  mainWindow.on("focus", async () => {
+    const data = await loadStatsData();
     if (data && mainWindow) {
       mainWindow.webContents.send("stats-updated", data);
     }
@@ -233,7 +221,7 @@ function positionPopover(): void {
   popoverWindow.setPosition(x, y, false);
 }
 
-function togglePopover(): void {
+async function togglePopover(): Promise<void> {
   if (!popoverWindow) {
     createPopoverWindow();
   }
@@ -245,7 +233,7 @@ function togglePopover(): void {
   popoverWindow!.show();
   popoverWindow!.focus();
   // push fresh data on open
-  const stats = readStatsFile();
+  const stats = await loadStatsData();
   if (stats) popoverWindow!.webContents.send("stats-updated", stats);
   const sessions = readSessions();
   popoverWindow!.webContents.send("sessions-updated", sessions);
@@ -317,7 +305,7 @@ function startSessionsMonitor(): void {
   sessionsInterval = setInterval(broadcastSessions, 5000);
 }
 
-ipcMain.handle("get-stats-data", () => readStatsFile());
+ipcMain.handle("get-stats-data", () => loadStatsData());
 ipcMain.handle("get-history-data", () => readHistoryFile());
 ipcMain.handle("get-sessions", () => readSessions());
 
