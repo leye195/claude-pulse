@@ -45,6 +45,7 @@ export interface StatsData {
   hourCounts: Record<string, number>;
   totalSpeculationTimeSavedMs: number;
   dailyCosts?: Record<string, number>;
+  totalCost?: number;
 }
 
 export interface ActiveSession {

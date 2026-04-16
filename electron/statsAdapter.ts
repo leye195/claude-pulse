@@ -210,10 +210,12 @@ export async function loadStatsData(): Promise<StatsData | null> {
       }
     }
 
-    // Build dailyCosts from ccusage
+    // Build dailyCosts and totalCost from ccusage
     const dailyCosts: Record<string, number> = {};
+    let totalCost = 0;
     for (const day of dailyUsage) {
       dailyCosts[day.date] = day.totalCost;
+      totalCost += day.totalCost;
     }
 
     // Build dailyActivity from walker
@@ -257,6 +259,7 @@ export async function loadStatsData(): Promise<StatsData | null> {
       hourCounts,
       totalSpeculationTimeSavedMs: 0,
       dailyCosts,
+      totalCost,
     };
 
     cachedResult = statsData;

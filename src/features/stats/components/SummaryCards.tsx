@@ -60,7 +60,7 @@ export function SummaryCards({ data }: SummaryCardsProps) {
       ? latestCostDate.slice(5).replace("-", "/")
       : "";
   const costLabel = hasTodayCost ? "오늘 비용" : `최근 비용 (${costDate})`;
-  const totalCost = Object.values(dailyCosts).reduce((sum, c) => sum + c, 0);
+  const totalCost = data.totalCost ?? 0;
 
   const cards = [
     { label: tokenLabel, value: displayTokens.toLocaleString(), color: "text-blue-400" },
