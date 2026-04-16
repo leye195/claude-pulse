@@ -1,4 +1,4 @@
-import type { TabType } from "@/shared/components/TabBar";
+import type { TabType } from "@/shared/types/tab";
 import type { HistoryEntry } from "@/shared/types/history";
 import type { AppSettings, DeepPartial } from "@/shared/types/settings";
 
