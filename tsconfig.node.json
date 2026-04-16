@@ -5,6 +5,7 @@
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "strict": true,
+    "skipLibCheck": true,
     "outDir": "dist-electron",
     "paths": {
       "@/*": ["./src/*"]
@@ -13,6 +14,9 @@
   "include": [
     "electron/**/*",
     "src/shared/types/settings.ts",
+    "src/shared/types/stats.ts",
+    "src/shared/types/history.ts",
+    "src/shared/types/tab.ts",
     "src/shared/utils/sessionAlertLogic.ts",
     "vite.config.ts"
   ]

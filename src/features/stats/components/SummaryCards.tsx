@@ -5,6 +5,11 @@ interface SummaryCardsProps {
   data: StatsData;
 }
 
+function formatCost(usd: number): string {
+  if (usd >= 1) return `$${usd.toFixed(2)}`;
+  return `$${usd.toFixed(3)}`;
+}
+
 export function SummaryCards({ data }: SummaryCardsProps) {
   const today = new Date().toISOString().slice(0, 10);
 
@@ -38,14 +43,30 @@ export function SummaryCards({ data }: SummaryCardsProps) {
   const tokenLabel = isToday ? "오늘 토큰" : `최근 토큰 (${displayDate})`;
   const messageLabel = isToday ? "오늘 메시지" : `최근 메시지 (${displayDate})`;
 
-  const firstDate = new Date(data.firstSessionDate);
-  const daysSinceFirst = Math.floor((Date.now() - firstDate.getTime()) / (1000 * 60 * 60 * 24));
+  // Cost cards
+  const dailyCosts = data.dailyCosts ?? {};
+  const costDates = Object.keys(dailyCosts).sort();
+  const todayCost = dailyCosts[today];
+  const hasTodayCost = todayCost !== undefined && todayCost > 0;
+  const latestCostDate = costDates.length > 0 ? costDates[costDates.length - 1] : null;
+  const displayCost = hasTodayCost
+    ? todayCost
+    : latestCostDate
+      ? dailyCosts[latestCostDate]
+      : 0;
+  const costDate = hasTodayCost
+    ? "오늘"
+    : latestCostDate
+      ? latestCostDate.slice(5).replace("-", "/")
+      : "";
+  const costLabel = hasTodayCost ? "오늘 비용" : `최근 비용 (${costDate})`;
+  const totalCost = data.totalCost ?? 0;
 
   const cards = [
     { label: tokenLabel, value: displayTokens.toLocaleString(), color: "text-blue-400" },
     { label: messageLabel, value: displayMessages.toLocaleString(), color: "text-green-400" },
-    { label: "총 세션", value: data.totalSessions.toLocaleString(), color: "text-purple-400" },
-    { label: "사용 기간", value: `${daysSinceFirst}일`, color: "text-orange-400" },
+    { label: costLabel, value: formatCost(displayCost), color: "text-purple-400" },
+    { label: "총 비용", value: formatCost(totalCost), color: "text-orange-400" },
   ];
 
   return (
