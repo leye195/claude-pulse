@@ -146,7 +146,7 @@ describe("getModelBreakdown", () => {
       cacheReadInputTokens: 0,
       cacheCreationInputTokens: 0,
       webSearchRequests: 0,
-      costUSD: 0,
+      costUSD: 12.5,
       contextWindow: 0,
       maxOutputTokens: 0,
     },
@@ -156,7 +156,7 @@ describe("getModelBreakdown", () => {
       cacheReadInputTokens: 0,
       cacheCreationInputTokens: 0,
       webSearchRequests: 0,
-      costUSD: 0,
+      costUSD: 0.05,
       contextWindow: 0,
       maxOutputTokens: 0,
     },
@@ -165,8 +165,8 @@ describe("getModelBreakdown", () => {
   it("returns model breakdown with formatted names and totals", () => {
     const result = getModelBreakdown(modelUsage);
     expect(result).toEqual([
-      { name: "Opus 4.6", tokens: 100000, percentage: 99.8 },
-      { name: "Sonnet 4.5", tokens: 200, percentage: 0.2 },
+      { name: "Opus 4.6", tokens: 100000, percentage: 99.8, costUSD: 12.5 },
+      { name: "Sonnet 4.5", tokens: 200, percentage: 0.2, costUSD: 0.05 },
     ]);
   });
 

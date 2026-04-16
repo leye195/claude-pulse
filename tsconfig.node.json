@@ -5,6 +5,8 @@
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "strict": true,
+    "skipLibCheck": true,
+    "jsx": "react-jsx",
     "outDir": "dist-electron",
     "paths": {
       "@/*": ["./src/*"]
@@ -13,6 +15,9 @@
   "include": [
     "electron/**/*",
     "src/shared/types/settings.ts",
+    "src/shared/types/stats.ts",
+    "src/shared/types/history.ts",
+    "src/shared/components/TabBar.tsx",
     "src/shared/utils/sessionAlertLogic.ts",
     "vite.config.ts"
   ]
