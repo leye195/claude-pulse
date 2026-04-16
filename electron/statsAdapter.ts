@@ -13,6 +13,13 @@ import type {
   LongestSession,
 } from "../src/shared/types/stats.js";
 
+interface TokenInfo {
+  inputTokens: number;
+  outputTokens: number;
+  cacheReadInputTokens: number;
+  cacheCreationInputTokens: number;
+}
+
 interface WalkResult {
   dailyMessageCounts: Map<string, number>;
   dailyToolCallCounts: Map<string, number>;
@@ -22,6 +29,9 @@ interface WalkResult {
   allSessionIds: Set<string>;
   totalMessages: number;
   firstTimestamp: number | null;
+  // Token aggregation (replaces ccusage's token loading)
+  dailyModelTokens: Map<string, Map<string, TokenInfo>>;
+  modelUsage: Map<string, TokenInfo>;
 }
 
 interface JsonlEntry {
@@ -30,6 +40,13 @@ interface JsonlEntry {
   sessionId?: string;
   message?: {
     content?: Array<{ type?: string }>;
+    usage?: {
+      input_tokens?: number;
+      output_tokens?: number;
+      cache_creation_input_tokens?: number;
+      cache_read_input_tokens?: number;
+    };
+    model?: string;
   };
 }
 
@@ -43,6 +60,8 @@ async function walkJsonlFiles(): Promise<WalkResult> {
     allSessionIds: new Set(),
     totalMessages: 0,
     firstTimestamp: null,
+    dailyModelTokens: new Map(),
+    modelUsage: new Map(),
   };
 
   const claudePaths = getClaudePaths();
@@ -108,11 +127,11 @@ async function walkJsonlFiles(): Promise<WalkResult> {
       result.hourCounts.set(hour, (result.hourCounts.get(hour) ?? 0) + 1);
 
       // Session timestamps for longestSession
-      const existing = result.sessionTimestamps.get(entrySessionId);
-      if (existing) {
-        if (ts < existing.first) existing.first = ts;
-        if (ts > existing.last) existing.last = ts;
-        existing.messageCount += 1;
+      const existingSession = result.sessionTimestamps.get(entrySessionId);
+      if (existingSession) {
+        if (ts < existingSession.first) existingSession.first = ts;
+        if (ts > existingSession.last) existingSession.last = ts;
+        existingSession.messageCount += 1;
       } else {
         result.sessionTimestamps.set(entrySessionId, { first: ts, last: ts, messageCount: 1 });
       }
@@ -120,6 +139,44 @@ async function walkJsonlFiles(): Promise<WalkResult> {
       // Track earliest timestamp
       if (result.firstTimestamp === null || ts < result.firstTimestamp) {
         result.firstTimestamp = ts;
+      }
+
+      // Token aggregation from usage data
+      const usage = entry.message?.usage;
+      const model = entry.message?.model;
+      if (usage && model) {
+        const tokens: TokenInfo = {
+          inputTokens: usage.input_tokens ?? 0,
+          outputTokens: usage.output_tokens ?? 0,
+          cacheReadInputTokens: usage.cache_read_input_tokens ?? 0,
+          cacheCreationInputTokens: usage.cache_creation_input_tokens ?? 0,
+        };
+
+        // Daily model tokens
+        if (!result.dailyModelTokens.has(date)) {
+          result.dailyModelTokens.set(date, new Map());
+        }
+        const dayModels = result.dailyModelTokens.get(date)!;
+        const existingDay = dayModels.get(model);
+        if (existingDay) {
+          existingDay.inputTokens += tokens.inputTokens;
+          existingDay.outputTokens += tokens.outputTokens;
+          existingDay.cacheReadInputTokens += tokens.cacheReadInputTokens;
+          existingDay.cacheCreationInputTokens += tokens.cacheCreationInputTokens;
+        } else {
+          dayModels.set(model, { ...tokens });
+        }
+
+        // Aggregated model usage
+        const existingModel = result.modelUsage.get(model);
+        if (existingModel) {
+          existingModel.inputTokens += tokens.inputTokens;
+          existingModel.outputTokens += tokens.outputTokens;
+          existingModel.cacheReadInputTokens += tokens.cacheReadInputTokens;
+          existingModel.cacheCreationInputTokens += tokens.cacheCreationInputTokens;
+        } else {
+          result.modelUsage.set(model, { ...tokens });
+        }
       }
     }
   }
@@ -163,6 +220,8 @@ export async function loadStatsData(): Promise<StatsData | null> {
   }
 
   try {
+    // loadDailyUsageData: cost data only (requires ccusage's PricingFetcher)
+    // walkJsonlFiles: tokens + activity data (single file pass)
     const [dailyUsage, walkResult] = await Promise.all([
       loadDailyUsageData(),
       walkJsonlFiles(),
@@ -172,45 +231,45 @@ export async function loadStatsData(): Promise<StatsData | null> {
       return null;
     }
 
-    // Sort daily usage by date ascending
-    dailyUsage.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
-
-    // Build dailyModelTokens from ccusage
-    const dailyModelTokens: DailyModelTokens[] = dailyUsage.map((day) => {
+    // Build dailyModelTokens from walker
+    const allDates = new Set<string>([
+      ...walkResult.dailyMessageCounts.keys(),
+      ...walkResult.dailyModelTokens.keys(),
+    ]);
+    const dailyModelTokens: DailyModelTokens[] = [...allDates].sort().map((date) => {
       const tokensByModel: Record<string, number> = {};
-      for (const mb of day.modelBreakdowns) {
-        tokensByModel[mb.modelName] = mb.inputTokens + mb.outputTokens;
+      const dayModels = walkResult.dailyModelTokens.get(date);
+      if (dayModels) {
+        for (const [model, info] of dayModels) {
+          tokensByModel[model] = info.inputTokens + info.outputTokens;
+        }
       }
-      return { date: day.date, tokensByModel };
+      return { date, tokensByModel };
     });
 
-    // Build aggregated modelUsage from ccusage
-    const modelUsage: Record<string, ModelUsage> = {};
+    // Build aggregated modelUsage from walker tokens + ccusage costs
+    const costByModel: Record<string, number> = {};
     for (const day of dailyUsage) {
       for (const mb of day.modelBreakdowns) {
-        const existing = modelUsage[mb.modelName];
-        if (existing) {
-          existing.inputTokens += mb.inputTokens;
-          existing.outputTokens += mb.outputTokens;
-          existing.cacheCreationInputTokens += mb.cacheCreationTokens;
-          existing.cacheReadInputTokens += mb.cacheReadTokens;
-          existing.costUSD += mb.cost;
-        } else {
-          modelUsage[mb.modelName] = {
-            inputTokens: mb.inputTokens,
-            outputTokens: mb.outputTokens,
-            cacheCreationInputTokens: mb.cacheCreationTokens,
-            cacheReadInputTokens: mb.cacheReadTokens,
-            costUSD: mb.cost,
-            webSearchRequests: 0,
-            contextWindow: 0,
-            maxOutputTokens: 0,
-          };
-        }
+        costByModel[mb.modelName] = (costByModel[mb.modelName] ?? 0) + mb.cost;
       }
     }
 
-    // Build dailyCosts and totalCost from ccusage
+    const modelUsage: Record<string, ModelUsage> = {};
+    for (const [model, tokens] of walkResult.modelUsage) {
+      modelUsage[model] = {
+        inputTokens: tokens.inputTokens,
+        outputTokens: tokens.outputTokens,
+        cacheCreationInputTokens: tokens.cacheCreationInputTokens,
+        cacheReadInputTokens: tokens.cacheReadInputTokens,
+        costUSD: costByModel[model] ?? 0,
+        webSearchRequests: 0,
+        contextWindow: 0,
+        maxOutputTokens: 0,
+      };
+    }
+
+    // Build dailyCosts and totalCost from ccusage (cost calculation only)
     const dailyCosts: Record<string, number> = {};
     let totalCost = 0;
     for (const day of dailyUsage) {
@@ -219,10 +278,6 @@ export async function loadStatsData(): Promise<StatsData | null> {
     }
 
     // Build dailyActivity from walker
-    const allDates = new Set<string>([
-      ...walkResult.dailyMessageCounts.keys(),
-      ...dailyUsage.map((d) => d.date),
-    ]);
     const dailyActivity: DailyActivity[] = [...allDates]
       .sort()
       .map((date) => ({
