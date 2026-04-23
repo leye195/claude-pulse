@@ -3,15 +3,11 @@ import { app, BrowserWindow, ipcMain, nativeImage, screen, Tray } from "electron
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import {
-  loadSettings,
-  getSettings,
-  updateSettings,
-  onSettingsChange,
-} from "./configStore.js";
+import type { AppSettings, DeepPartial } from "../src/shared/types/settings.js";
+import { getSettings, loadSettings, onSettingsChange, updateSettings } from "./configStore.js";
+import { readHarnessConfigs } from "./harnessReader.js";
 import { processSessions, setAlertClickHandler } from "./sessionAlertMonitor.js";
 import { loadStatsData } from "./statsAdapter.js";
-import type { AppSettings, DeepPartial } from "../src/shared/types/settings.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isDev = !app.isPackaged;
@@ -308,6 +304,9 @@ function startSessionsMonitor(): void {
 ipcMain.handle("get-stats-data", () => loadStatsData());
 ipcMain.handle("get-history-data", () => readHistoryFile());
 ipcMain.handle("get-sessions", () => readSessions());
+ipcMain.handle("get-harness-configs", (_event, paths: string[]) =>
+  readHarnessConfigs(Array.isArray(paths) ? paths : [])
+);
 
 ipcMain.handle("get-settings", () => getSettings());
 
@@ -325,7 +324,7 @@ ipcMain.on("show-main-window", () => {
   if (popoverWindow?.isVisible()) popoverWindow.hide();
 });
 
-type TabPayload = "stats" | "projects" | "settings";
+type TabPayload = "stats" | "projects" | "settings" | "harness";
 
 ipcMain.on("show-main-window-tab", (_event, tab: TabPayload) => {
   if (!mainWindow) {
