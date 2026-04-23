@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import type { HistoryEntry } from "@/shared/types/history";
 import {
   filterHistoryByDateRange,
@@ -9,6 +8,7 @@ import {
   getWeekdayHourlyHeatmap,
   parseProjectName,
 } from "@/shared/utils/historyParser";
+import { describe, expect, it } from "vitest";
 
 const sampleEntries: HistoryEntry[] = [
   {

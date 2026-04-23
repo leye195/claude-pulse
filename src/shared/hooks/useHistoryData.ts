@@ -1,6 +1,6 @@
+import type { HistoryEntry } from "@/shared/types/history";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import type { HistoryEntry } from "@/shared/types/history";
 
 async function fetchHistory(): Promise<HistoryEntry[] | null> {
   return window.electronAPI.getHistoryData();

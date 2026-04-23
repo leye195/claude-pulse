@@ -1,3 +1,5 @@
+import type { DailyActivity } from "@/shared/types/stats";
+import { filterByDateRange, getToolCallData } from "@/shared/utils/statsParser";
 import { useMemo, useState } from "react";
 import {
   Bar,
@@ -10,8 +12,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { DailyActivity } from "@/shared/types/stats";
-import { filterByDateRange, getToolCallData } from "@/shared/utils/statsParser";
 
 interface ToolCallChartProps {
   dailyActivity: DailyActivity[];

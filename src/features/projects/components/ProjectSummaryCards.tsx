@@ -1,6 +1,7 @@
-import { useMemo } from "react";
+import { useAnimatedNumber } from "@/shared/hooks/useAnimatedNumber";
 import type { HistoryEntry } from "@/shared/types/history";
 import { getProjectSummaries } from "@/shared/utils/historyParser";
+import { useMemo } from "react";
 
 interface ProjectSummaryCardsProps {
   entries: HistoryEntry[];
@@ -15,10 +16,14 @@ export function ProjectSummaryCards({ entries }: ProjectSummaryCardsProps) {
     .size;
   const topProject = summaries[0]?.projectName ?? "-";
 
+  const animProjects = useAnimatedNumber(totalProjects);
+  const animMessages = useAnimatedNumber(totalMessages);
+  const animActiveDays = useAnimatedNumber(activeDays);
+
   const cards = [
-    { label: "프로젝트 수", value: String(totalProjects), color: "text-blue-400" },
-    { label: "총 프롬프트", value: totalMessages.toLocaleString(), color: "text-green-400" },
-    { label: "활동 일수", value: `${activeDays}일`, color: "text-purple-400" },
+    { label: "프로젝트 수", value: String(animProjects), color: "text-blue-400" },
+    { label: "총 프롬프트", value: animMessages.toLocaleString(), color: "text-green-400" },
+    { label: "활동 일수", value: `${animActiveDays}일`, color: "text-purple-400" },
     { label: "최다 활동", value: topProject, color: "text-orange-400" },
   ];
 

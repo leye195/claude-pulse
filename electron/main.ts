@@ -3,15 +3,11 @@ import { app, BrowserWindow, ipcMain, nativeImage, screen, Tray } from "electron
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import {
-  loadSettings,
-  getSettings,
-  updateSettings,
-  onSettingsChange,
-} from "./configStore.js";
+import type { AppSettings, DeepPartial } from "../src/shared/types/settings.js";
+import { getSettings, loadSettings, onSettingsChange, updateSettings } from "./configStore.js";
+import { readHarnessConfigs } from "./harnessReader.js";
 import { processSessions, setAlertClickHandler } from "./sessionAlertMonitor.js";
 import { loadStatsData } from "./statsAdapter.js";
-import type { AppSettings, DeepPartial } from "../src/shared/types/settings.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isDev = !app.isPackaged;
@@ -29,9 +25,9 @@ function getSessionsDir(): string {
   return path.join(app.getPath("home"), ".claude", "sessions");
 }
 
-function readHistoryFile(): unknown[] | null {
+async function readHistoryFile(): Promise<unknown[] | null> {
   try {
-    const raw = fs.readFileSync(getHistoryPath(), "utf-8");
+    const raw = await fs.promises.readFile(getHistoryPath(), "utf-8");
     const entries: unknown[] = [];
     for (const line of raw.split("\n")) {
       if (!line.trim()) continue;
@@ -79,37 +75,41 @@ function getCpuPercent(pid: number): number {
   }
 }
 
-function readSessions(): ActiveSession[] {
+async function readSessions(): Promise<ActiveSession[]> {
   const dir = getSessionsDir();
   let files: string[];
   try {
-    files = fs.readdirSync(dir).filter((f) => f.endsWith(".json"));
+    files = (await fs.promises.readdir(dir)).filter((f) => f.endsWith(".json"));
   } catch {
     return [];
   }
 
-  const sessions: ActiveSession[] = [];
-  for (const file of files) {
-    try {
-      const raw = fs.readFileSync(path.join(dir, file), "utf-8");
-      const data = JSON.parse(raw) as RawSessionFile;
-      if (!data.pid || !data.sessionId || !data.cwd) continue;
-      const cpuPercent = getCpuPercent(data.pid);
-      sessions.push({
-        pid: data.pid,
-        sessionId: data.sessionId,
-        cwd: data.cwd,
-        projectName: path.basename(data.cwd),
-        startedAt: data.startedAt ?? Date.now(),
-        name: data.name,
-        cpuPercent,
-        isActive: cpuPercent > 1,
-      });
-    } catch {
-      // skip
-    }
-  }
-  return sessions.sort((a, b) => b.startedAt - a.startedAt);
+  const parsed = await Promise.all(
+    files.map(async (file): Promise<ActiveSession | null> => {
+      try {
+        const raw = await fs.promises.readFile(path.join(dir, file), "utf-8");
+        const data = JSON.parse(raw) as RawSessionFile;
+        if (!data.pid || !data.sessionId || !data.cwd) return null;
+        const cpuPercent = getCpuPercent(data.pid);
+        return {
+          pid: data.pid,
+          sessionId: data.sessionId,
+          cwd: data.cwd,
+          projectName: path.basename(data.cwd),
+          startedAt: data.startedAt ?? Date.now(),
+          name: data.name,
+          cpuPercent,
+          isActive: cpuPercent > 1,
+        };
+      } catch {
+        return null;
+      }
+    })
+  );
+
+  return parsed
+    .filter((s): s is ActiveSession => s !== null)
+    .sort((a, b) => b.startedAt - a.startedAt);
 }
 
 let mainWindow: BrowserWindow | null = null;
@@ -146,7 +146,7 @@ function createMainWindow(): void {
     if (data && mainWindow) {
       mainWindow.webContents.send("stats-updated", data);
     }
-    const history = readHistoryFile();
+    const history = await readHistoryFile();
     if (history && mainWindow) {
       mainWindow.webContents.send("history-updated", history);
     }
@@ -235,7 +235,7 @@ async function togglePopover(): Promise<void> {
   // push fresh data on open
   const stats = await loadStatsData();
   if (stats) popoverWindow!.webContents.send("stats-updated", stats);
-  const sessions = readSessions();
+  const sessions = await readSessions();
   popoverWindow!.webContents.send("sessions-updated", sessions);
 }
 
@@ -274,8 +274,8 @@ function createTray(): void {
   tray.on("right-click", () => togglePopover());
 }
 
-function broadcastSessions(): void {
-  const sessions = readSessions();
+async function broadcastSessions(): Promise<void> {
+  const sessions = await readSessions();
   const settings = getSettings();
   const { hasStuckSessions } = processSessions({
     sessions: sessions.map((s) => ({
@@ -298,16 +298,23 @@ function startSessionsMonitor(): void {
   const dir = getSessionsDir();
   try {
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    sessionsWatcher = fs.watch(dir, () => broadcastSessions());
+    sessionsWatcher = fs.watch(dir, () => {
+      void broadcastSessions();
+    });
   } catch {
     sessionsWatcher = null;
   }
-  sessionsInterval = setInterval(broadcastSessions, 5000);
+  sessionsInterval = setInterval(() => {
+    void broadcastSessions();
+  }, 5000);
 }
 
 ipcMain.handle("get-stats-data", () => loadStatsData());
 ipcMain.handle("get-history-data", () => readHistoryFile());
 ipcMain.handle("get-sessions", () => readSessions());
+ipcMain.handle("get-harness-configs", (_event, paths: string[]) =>
+  readHarnessConfigs(Array.isArray(paths) ? paths : [])
+);
 
 ipcMain.handle("get-settings", () => getSettings());
 
@@ -325,7 +332,7 @@ ipcMain.on("show-main-window", () => {
   if (popoverWindow?.isVisible()) popoverWindow.hide();
 });
 
-type TabPayload = "stats" | "projects" | "settings";
+type TabPayload = "stats" | "projects" | "settings" | "harness";
 
 ipcMain.on("show-main-window-tab", (_event, tab: TabPayload) => {
   if (!mainWindow) {
@@ -359,7 +366,7 @@ app.whenReady().then(() => {
     }
     // Re-evaluate tray badge state immediately when settings change,
     // instead of waiting for the next 5-second polling tick.
-    broadcastSessions();
+    void broadcastSessions();
   });
   createMainWindow();
   createTray();

@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import type { DailyActivity, DailyModelTokens, ModelUsage } from "@/shared/types/stats";
 import {
   filterByDateRange,
@@ -9,6 +8,7 @@ import {
   getToolCallData,
   getTotalTokensForDate,
 } from "@/shared/utils/statsParser";
+import { describe, expect, it } from "vitest";
 
 const sampleDailyTokens: DailyModelTokens[] = [
   {

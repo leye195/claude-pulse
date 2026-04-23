@@ -18,6 +18,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
     };
   },
   getSessions: () => ipcRenderer.invoke("get-sessions"),
+  getHarnessConfigs: (paths: string[]) => ipcRenderer.invoke("get-harness-configs", paths),
   onSessionsUpdated: (callback: (data: unknown[]) => void) => {
     const handler = (_event: Electron.IpcRendererEvent, data: unknown[]) => callback(data);
     ipcRenderer.on("sessions-updated", handler);

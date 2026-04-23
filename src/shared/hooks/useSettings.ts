@@ -1,6 +1,6 @@
+import { DEFAULT_SETTINGS, type AppSettings, type DeepPartial } from "@/shared/types/settings";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { DEFAULT_SETTINGS, type AppSettings, type DeepPartial } from "@/shared/types/settings";
 
 const QUERY_KEY = ["settings"] as const;
 
@@ -23,8 +23,7 @@ export function useSettings() {
   }, [queryClient, refetch]);
 
   const mutation = useMutation({
-    mutationFn: (partial: DeepPartial<AppSettings>) =>
-      window.electronAPI.updateSettings(partial),
+    mutationFn: (partial: DeepPartial<AppSettings>) => window.electronAPI.updateSettings(partial),
     onSuccess: (next) => {
       queryClient.setQueryData(QUERY_KEY, next);
     },

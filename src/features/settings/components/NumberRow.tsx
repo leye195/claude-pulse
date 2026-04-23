@@ -9,7 +9,14 @@ interface NumberRowProps {
   onCommit: (v: number) => void;
 }
 
-export function NumberRow({ label, value, disabled, min = 1, max = 1440, onCommit }: NumberRowProps) {
+export function NumberRow({
+  label,
+  value,
+  disabled,
+  min = 1,
+  max = 1440,
+  onCommit,
+}: NumberRowProps) {
   const [draft, setDraft] = useState<string>(String(value));
 
   // Sync from prop only when the upstream value actually changes externally
