@@ -1,3 +1,4 @@
+import { useAnimatedNumber } from "@/shared/hooks/useAnimatedNumber";
 import type { StatsData } from "@/shared/types/stats";
 import { getTotalTokensForDate } from "@/shared/utils/statsParser";
 
@@ -58,11 +59,16 @@ export function SummaryCards({ data }: SummaryCardsProps) {
   const costLabel = hasTodayCost ? "오늘 비용" : `최근 비용 (${costDate})`;
   const totalCost = data.totalCost ?? 0;
 
+  const animTokens = useAnimatedNumber(displayTokens);
+  const animMessages = useAnimatedNumber(displayMessages);
+  const animDisplayCost = useAnimatedNumber(displayCost);
+  const animTotalCost = useAnimatedNumber(totalCost);
+
   const cards = [
-    { label: tokenLabel, value: displayTokens.toLocaleString(), color: "text-blue-400" },
-    { label: messageLabel, value: displayMessages.toLocaleString(), color: "text-green-400" },
-    { label: costLabel, value: formatCost(displayCost), color: "text-purple-400" },
-    { label: "총 비용", value: formatCost(totalCost), color: "text-orange-400" },
+    { label: tokenLabel, value: animTokens.toLocaleString(), color: "text-blue-400" },
+    { label: messageLabel, value: animMessages.toLocaleString(), color: "text-green-400" },
+    { label: costLabel, value: formatCost(animDisplayCost), color: "text-purple-400" },
+    { label: "총 비용", value: formatCost(animTotalCost), color: "text-orange-400" },
   ];
 
   return (

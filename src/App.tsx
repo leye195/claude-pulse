@@ -51,19 +51,23 @@ export function App() {
         />
         <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
 
-        {activeTab === "stats" && <StatsTab data={data} error={error} retry={retry} />}
-        {activeTab === "projects" && (
+        <div hidden={activeTab !== "stats"}>
+          <StatsTab data={data} error={error} retry={retry} />
+        </div>
+        <div hidden={activeTab !== "projects"}>
           <ProjectsTab
             data={historyData}
             loading={historyLoading}
             error={historyError}
             retry={historyRetry}
           />
-        )}
-        {activeTab === "harness" && (
+        </div>
+        <div hidden={activeTab !== "harness"}>
           <HarnessTab historyData={historyData} historyLoading={historyLoading} />
-        )}
-        {activeTab === "settings" && <SettingsTab />}
+        </div>
+        <div hidden={activeTab !== "settings"}>
+          <SettingsTab />
+        </div>
       </div>
     </div>
   );

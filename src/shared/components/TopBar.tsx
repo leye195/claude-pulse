@@ -1,4 +1,5 @@
 import { ThemeToggle } from "@/shared/components/ThemeToggle";
+import { useAnimatedNumber } from "@/shared/hooks/useAnimatedNumber";
 
 interface TopBarProps {
   totalMessages: number;
@@ -8,6 +9,9 @@ interface TopBarProps {
 }
 
 export function TopBar({ totalMessages, totalSessions, theme, onToggleTheme }: TopBarProps) {
+  const animMessages = useAnimatedNumber(totalMessages);
+  const animSessions = useAnimatedNumber(totalSessions);
+
   return (
     <div
       className="flex items-center justify-between pb-4 mb-6 border-b border-(--border)"
@@ -19,10 +23,10 @@ export function TopBar({ totalMessages, totalSessions, theme, onToggleTheme }: T
         style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
       >
         <span className="bg-(--badge-bg) px-3 py-1 rounded-md text-sm text-(--text-secondary)">
-          Total: {totalMessages.toLocaleString()} messages
+          Total: {animMessages.toLocaleString()} messages
         </span>
         <span className="bg-(--badge-bg) px-3 py-1 rounded-md text-sm text-(--text-secondary)">
-          {totalSessions} sessions
+          {animSessions} sessions
         </span>
         <ThemeToggle theme={theme} onToggle={onToggleTheme} />
       </div>
