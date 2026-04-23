@@ -1,9 +1,9 @@
-import { useMemo } from "react";
-import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis } from "recharts";
 import { useStatsData } from "@/shared/hooks/useStatsData";
 import { useTheme } from "@/shared/hooks/useTheme";
 import type { StatsData } from "@/shared/types/stats";
 import { getDailyTokensArray } from "@/shared/utils/statsParser";
+import { useMemo } from "react";
+import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis } from "recharts";
 import { MiniContribution } from "./components/MiniContribution";
 import { SessionList, useSessions } from "./components/SessionList";
 import { StatCard } from "./components/StatCard";

@@ -1,10 +1,10 @@
-import { describe, expect, it } from "vitest";
 import { DEFAULT_SETTINGS, type AppSettings } from "@/shared/types/settings";
 import {
   evaluate,
   type SessionInput,
   type SessionTrackState,
 } from "@/shared/utils/sessionAlertLogic";
+import { describe, expect, it } from "vitest";
 
 const settings: AppSettings = DEFAULT_SETTINGS;
 const T0 = 1_700_000_000_000;
@@ -69,9 +69,7 @@ describe("evaluate — completion alert (⚡→💤)", () => {
   it("fires completion alert when active session becomes idle", () => {
     const prev = new Map([["s1", activeState("s1", T0)]]);
     const result = evaluate(prev, [session("s1", false)], settings, T0 + 5000);
-    expect(result.alerts).toEqual([
-      { type: "completion", sessionId: "s1", projectName: "demo" },
-    ]);
+    expect(result.alerts).toEqual([{ type: "completion", sessionId: "s1", projectName: "demo" }]);
     expect(result.newState.get("s1")).toMatchObject({
       lastStatus: "idle",
       activeSince: null,
@@ -91,9 +89,7 @@ describe("evaluate — completion alert (⚡→💤)", () => {
     const r1 = evaluate(prev, [session("s1", false)], settings, T0 + 5000);
     const r2 = evaluate(r1.newState, [session("s1", true)], settings, T0 + 10000);
     const r3 = evaluate(r2.newState, [session("s1", false)], settings, T0 + 15000);
-    expect(r3.alerts).toEqual([
-      { type: "completion", sessionId: "s1", projectName: "demo" },
-    ]);
+    expect(r3.alerts).toEqual([{ type: "completion", sessionId: "s1", projectName: "demo" }]);
   });
 
   it("does not fire completion alert when completionAlert setting is off", () => {
@@ -176,11 +172,7 @@ describe("evaluate — multi-session", () => {
     const eleven = T0 + 11 * 60_000;
     const result = evaluate(
       prev,
-      [
-        session("s1", false, "alpha"),
-        session("s2", true, "beta"),
-        session("s3", false, "gamma"),
-      ],
+      [session("s1", false, "alpha"), session("s2", true, "beta"), session("s3", false, "gamma")],
       settings,
       eleven
     );

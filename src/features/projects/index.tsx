@@ -1,5 +1,5 @@
-import type { HistoryEntry } from "@/shared/types/history";
 import { EmptyState } from "@/shared/components/EmptyState";
+import type { HistoryEntry } from "@/shared/types/history";
 import { HourlyChart } from "./components/HourlyChart";
 import { ProjectActivityTrend } from "./components/ProjectActivityTrend";
 import { ProjectBreakdown } from "./components/ProjectBreakdown";

@@ -1,3 +1,10 @@
+import type { HistoryEntry } from "@/shared/types/history";
+import {
+  filterHistoryByDateRange,
+  getProjectDailyActivity,
+  getProjectNames,
+  PROJECT_COLORS,
+} from "@/shared/utils/historyParser";
 import { useMemo, useState } from "react";
 import {
   Bar,
@@ -9,13 +16,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { HistoryEntry } from "@/shared/types/history";
-import {
-  filterHistoryByDateRange,
-  getProjectDailyActivity,
-  getProjectNames,
-  PROJECT_COLORS,
-} from "@/shared/utils/historyParser";
 
 interface ProjectActivityTrendProps {
   entries: HistoryEntry[];

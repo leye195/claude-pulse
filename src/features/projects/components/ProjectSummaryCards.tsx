@@ -1,6 +1,6 @@
-import { useMemo } from "react";
 import type { HistoryEntry } from "@/shared/types/history";
 import { getProjectSummaries } from "@/shared/utils/historyParser";
+import { useMemo } from "react";
 
 interface ProjectSummaryCardsProps {
   entries: HistoryEntry[];

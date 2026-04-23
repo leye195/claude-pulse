@@ -29,10 +29,7 @@ function clampMin(value: unknown, min: number, fallback: number): number {
   return Math.max(min, value);
 }
 
-export function mergeSettings(
-  partial: DeepPartial<AppSettings>,
-  base: AppSettings
-): AppSettings {
+export function mergeSettings(partial: DeepPartial<AppSettings>, base: AppSettings): AppSettings {
   const partialNotif = partial.notifications ?? {};
   const baseNotif = base.notifications;
   return {

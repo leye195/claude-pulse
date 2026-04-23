@@ -1,5 +1,5 @@
-import type { StatsData } from "@/shared/types/stats";
 import { EmptyState } from "@/shared/components/EmptyState";
+import type { StatsData } from "@/shared/types/stats";
 import { ContributionGraph } from "./components/ContributionGraph";
 import { DailyChart } from "./components/DailyChart";
 import { ModelBreakdown } from "./components/ModelBreakdown";

@@ -1,3 +1,9 @@
+import type { HistoryEntry } from "@/shared/types/history";
+import {
+  getHourlyActivityByProject,
+  getProjectNames,
+  PROJECT_COLORS,
+} from "@/shared/utils/historyParser";
 import { useMemo } from "react";
 import {
   Bar,
@@ -9,12 +15,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { HistoryEntry } from "@/shared/types/history";
-import {
-  getHourlyActivityByProject,
-  getProjectNames,
-  PROJECT_COLORS,
-} from "@/shared/utils/historyParser";
 
 interface HourlyChartProps {
   entries: HistoryEntry[];

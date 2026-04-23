@@ -17,11 +17,11 @@ export interface SessionTrackState {
 export type Alert =
   | { type: "completion"; sessionId: string; projectName: string }
   | {
-    type: "stuck";
-    sessionId: string;
-    projectName: string;
-    activeMinutes: number;
-  };
+      type: "stuck";
+      sessionId: string;
+      projectName: string;
+      activeMinutes: number;
+    };
 
 export interface EvaluateResult {
   newState: Map<string, SessionTrackState>;
@@ -88,8 +88,7 @@ export function evaluate(
         const repeatMs = settings.notifications.stuckRepeatMinutes * 60_000;
         if (elapsedMs >= thresholdMs) {
           const lastFired = next.lastStuckAlertAt;
-          const shouldFire =
-            lastFired === null ? true : now - lastFired >= repeatMs;
+          const shouldFire = lastFired === null ? true : now - lastFired >= repeatMs;
           if (shouldFire) {
             alerts.push({
               type: "stuck",

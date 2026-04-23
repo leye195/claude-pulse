@@ -1,6 +1,7 @@
-import type { TabType } from "@/shared/types/tab";
+import type { HarnessRawConfig } from "@/shared/types/harness";
 import type { HistoryEntry } from "@/shared/types/history";
 import type { AppSettings, DeepPartial } from "@/shared/types/settings";
+import type { TabType } from "@/shared/types/tab";
 
 export interface DailyActivity {
   date: string;
@@ -66,6 +67,7 @@ export interface ElectronAPI {
   onHistoryUpdated: (callback: (data: HistoryEntry[]) => void) => () => void;
   getSessions: () => Promise<ActiveSession[]>;
   onSessionsUpdated: (callback: (data: ActiveSession[]) => void) => () => void;
+  getHarnessConfigs: (paths: string[]) => Promise<HarnessRawConfig[]>;
   getSettings: () => Promise<AppSettings>;
   updateSettings: (partial: DeepPartial<AppSettings>) => Promise<AppSettings>;
   onSettingsUpdated: (callback: (settings: AppSettings) => void) => () => void;

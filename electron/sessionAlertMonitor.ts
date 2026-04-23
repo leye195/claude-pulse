@@ -1,11 +1,11 @@
 import { Notification } from "electron";
+import type { AppSettings } from "../src/shared/types/settings.js";
 import {
   evaluate,
   type Alert,
   type SessionInput,
   type SessionTrackState,
 } from "../src/shared/utils/sessionAlertLogic.js";
-import type { AppSettings } from "../src/shared/types/settings.js";
 
 let state = new Map<string, SessionTrackState>();
 let onClickHandler: (() => void) | null = null;
