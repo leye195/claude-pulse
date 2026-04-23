@@ -26,7 +26,7 @@ export function TopBar({ totalMessages, totalSessions, theme, onToggleTheme }: T
           Total: {animMessages.toLocaleString()} messages
         </span>
         <span className="bg-(--badge-bg) px-3 py-1 rounded-md text-sm text-(--text-secondary)">
-          {animSessions} sessions
+          {animSessions.toLocaleString()} sessions
         </span>
         <ThemeToggle theme={theme} onToggle={onToggleTheme} />
       </div>
