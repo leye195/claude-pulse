@@ -1,1 +1,1 @@
-export type TabType = "stats" | "projects" | "settings";
+export type TabType = "stats" | "projects" | "harness" | "settings";

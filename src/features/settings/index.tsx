@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
 import { useSettings } from "@/shared/hooks/useSettings";
 import type { NotificationSettings } from "@/shared/types/settings";
+import { useEffect, useState } from "react";
 import { NumberRow } from "./components/NumberRow";
 import { ToggleRow } from "./components/ToggleRow";
 

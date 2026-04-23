@@ -1,3 +1,9 @@
+import type { DailyModelTokens } from "@/shared/types/stats";
+import {
+  filterByDateRange,
+  formatModelName,
+  getDailyTokensArray,
+} from "@/shared/utils/statsParser";
 import { useMemo, useState } from "react";
 import {
   Bar,
@@ -9,8 +15,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { DailyModelTokens } from "@/shared/types/stats";
-import { filterByDateRange, formatModelName, getDailyTokensArray } from "@/shared/utils/statsParser";
 
 interface DailyChartProps {
   dailyModelTokens: DailyModelTokens[];

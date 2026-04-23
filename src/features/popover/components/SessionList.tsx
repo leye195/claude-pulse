@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import type { ActiveSession } from "@/shared/types/stats";
+import { useEffect, useState } from "react";
 
 function formatElapsed(startedAt: number): string {
   const diffMs = Date.now() - startedAt;

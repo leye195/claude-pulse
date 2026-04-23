@@ -49,11 +49,7 @@ export function SummaryCards({ data }: SummaryCardsProps) {
   const todayCost = dailyCosts[today];
   const hasTodayCost = todayCost !== undefined && todayCost > 0;
   const latestCostDate = costDates.length > 0 ? costDates[costDates.length - 1] : null;
-  const displayCost = hasTodayCost
-    ? todayCost
-    : latestCostDate
-      ? dailyCosts[latestCostDate]
-      : 0;
+  const displayCost = hasTodayCost ? todayCost : latestCostDate ? dailyCosts[latestCostDate] : 0;
   const costDate = hasTodayCost
     ? "오늘"
     : latestCostDate

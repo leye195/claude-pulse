@@ -1,7 +1,7 @@
-import { useMemo } from "react";
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import type { HistoryEntry } from "@/shared/types/history";
 import { getProjectSummaries, PROJECT_COLORS } from "@/shared/utils/historyParser";
+import { useMemo } from "react";
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 interface ProjectBreakdownProps {
   entries: HistoryEntry[];

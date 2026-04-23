@@ -9,6 +9,7 @@ interface TabBarProps {
 const TABS: { key: TabType; label: string }[] = [
   { key: "stats", label: "사용량 분석" },
   { key: "projects", label: "프로젝트 활동" },
+  { key: "harness", label: "하네스 점수" },
   { key: "settings", label: "설정" },
 ];
 

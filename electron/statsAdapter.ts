@@ -1,17 +1,13 @@
+import { getClaudePaths, globUsageFiles, loadDailyUsageData } from "ccusage/data-loader";
 import fs from "fs";
 import path from "path";
 import readline from "readline";
-import {
-  loadDailyUsageData,
-  getClaudePaths,
-  globUsageFiles,
-} from "ccusage/data-loader";
 import type {
-  StatsData,
   DailyActivity,
   DailyModelTokens,
-  ModelUsage,
   LongestSession,
+  ModelUsage,
+  StatsData,
 } from "../src/shared/types/stats.js";
 
 interface TokenInfo {
@@ -95,92 +91,92 @@ async function walkJsonlFiles(): Promise<WalkResult> {
           continue;
         }
 
-      if (entry.type !== "assistant" || !entry.timestamp) continue;
+        if (entry.type !== "assistant" || !entry.timestamp) continue;
 
-      const ts = new Date(entry.timestamp).getTime();
-      if (Number.isNaN(ts)) continue;
+        const ts = new Date(entry.timestamp).getTime();
+        if (Number.isNaN(ts)) continue;
 
-      const date = entry.timestamp.slice(0, 10);
-      const hour = new Date(entry.timestamp).getUTCHours().toString();
-      const entrySessionId = entry.sessionId ?? sessionId;
+        const date = entry.timestamp.slice(0, 10);
+        const hour = new Date(entry.timestamp).getUTCHours().toString();
+        const entrySessionId = entry.sessionId ?? sessionId;
 
-      // Count assistant messages per day
-      result.dailyMessageCounts.set(date, (result.dailyMessageCounts.get(date) ?? 0) + 1);
-      result.totalMessages += 1;
+        // Count assistant messages per day
+        result.dailyMessageCounts.set(date, (result.dailyMessageCounts.get(date) ?? 0) + 1);
+        result.totalMessages += 1;
 
-      // Count tool_use blocks per day
-      const toolUseCount = Array.isArray(entry.message?.content)
-        ? entry.message.content.filter((c) => c.type === "tool_use").length
-        : 0;
-      if (toolUseCount > 0) {
-        result.dailyToolCallCounts.set(
-          date,
-          (result.dailyToolCallCounts.get(date) ?? 0) + toolUseCount
-        );
-      }
-
-      // Track distinct sessions per day
-      if (!result.dailySessionIds.has(date)) {
-        result.dailySessionIds.set(date, new Set());
-      }
-      result.dailySessionIds.get(date)!.add(entrySessionId);
-      result.allSessionIds.add(entrySessionId);
-
-      // Hour distribution
-      result.hourCounts.set(hour, (result.hourCounts.get(hour) ?? 0) + 1);
-
-      // Session timestamps for longestSession
-      const existingSession = result.sessionTimestamps.get(entrySessionId);
-      if (existingSession) {
-        if (ts < existingSession.first) existingSession.first = ts;
-        if (ts > existingSession.last) existingSession.last = ts;
-        existingSession.messageCount += 1;
-      } else {
-        result.sessionTimestamps.set(entrySessionId, { first: ts, last: ts, messageCount: 1 });
-      }
-
-      // Track earliest timestamp
-      if (result.firstTimestamp === null || ts < result.firstTimestamp) {
-        result.firstTimestamp = ts;
-      }
-
-      // Token aggregation from usage data
-      const usage = entry.message?.usage;
-      const model = entry.message?.model;
-      if (usage && model) {
-        const tokens: TokenInfo = {
-          inputTokens: usage.input_tokens ?? 0,
-          outputTokens: usage.output_tokens ?? 0,
-          cacheReadInputTokens: usage.cache_read_input_tokens ?? 0,
-          cacheCreationInputTokens: usage.cache_creation_input_tokens ?? 0,
-        };
-
-        // Daily model tokens
-        if (!result.dailyModelTokens.has(date)) {
-          result.dailyModelTokens.set(date, new Map());
+        // Count tool_use blocks per day
+        const toolUseCount = Array.isArray(entry.message?.content)
+          ? entry.message.content.filter((c) => c.type === "tool_use").length
+          : 0;
+        if (toolUseCount > 0) {
+          result.dailyToolCallCounts.set(
+            date,
+            (result.dailyToolCallCounts.get(date) ?? 0) + toolUseCount
+          );
         }
-        const dayModels = result.dailyModelTokens.get(date)!;
-        const existingDay = dayModels.get(model);
-        if (existingDay) {
-          existingDay.inputTokens += tokens.inputTokens;
-          existingDay.outputTokens += tokens.outputTokens;
-          existingDay.cacheReadInputTokens += tokens.cacheReadInputTokens;
-          existingDay.cacheCreationInputTokens += tokens.cacheCreationInputTokens;
+
+        // Track distinct sessions per day
+        if (!result.dailySessionIds.has(date)) {
+          result.dailySessionIds.set(date, new Set());
+        }
+        result.dailySessionIds.get(date)!.add(entrySessionId);
+        result.allSessionIds.add(entrySessionId);
+
+        // Hour distribution
+        result.hourCounts.set(hour, (result.hourCounts.get(hour) ?? 0) + 1);
+
+        // Session timestamps for longestSession
+        const existingSession = result.sessionTimestamps.get(entrySessionId);
+        if (existingSession) {
+          if (ts < existingSession.first) existingSession.first = ts;
+          if (ts > existingSession.last) existingSession.last = ts;
+          existingSession.messageCount += 1;
         } else {
-          dayModels.set(model, { ...tokens });
+          result.sessionTimestamps.set(entrySessionId, { first: ts, last: ts, messageCount: 1 });
         }
 
-        // Aggregated model usage
-        const existingModel = result.modelUsage.get(model);
-        if (existingModel) {
-          existingModel.inputTokens += tokens.inputTokens;
-          existingModel.outputTokens += tokens.outputTokens;
-          existingModel.cacheReadInputTokens += tokens.cacheReadInputTokens;
-          existingModel.cacheCreationInputTokens += tokens.cacheCreationInputTokens;
-        } else {
-          result.modelUsage.set(model, { ...tokens });
+        // Track earliest timestamp
+        if (result.firstTimestamp === null || ts < result.firstTimestamp) {
+          result.firstTimestamp = ts;
         }
-      }
+
+        // Token aggregation from usage data
+        const usage = entry.message?.usage;
+        const model = entry.message?.model;
+        if (usage && model) {
+          const tokens: TokenInfo = {
+            inputTokens: usage.input_tokens ?? 0,
+            outputTokens: usage.output_tokens ?? 0,
+            cacheReadInputTokens: usage.cache_read_input_tokens ?? 0,
+            cacheCreationInputTokens: usage.cache_creation_input_tokens ?? 0,
+          };
+
+          // Daily model tokens
+          if (!result.dailyModelTokens.has(date)) {
+            result.dailyModelTokens.set(date, new Map());
+          }
+          const dayModels = result.dailyModelTokens.get(date)!;
+          const existingDay = dayModels.get(model);
+          if (existingDay) {
+            existingDay.inputTokens += tokens.inputTokens;
+            existingDay.outputTokens += tokens.outputTokens;
+            existingDay.cacheReadInputTokens += tokens.cacheReadInputTokens;
+            existingDay.cacheCreationInputTokens += tokens.cacheCreationInputTokens;
+          } else {
+            dayModels.set(model, { ...tokens });
+          }
+
+          // Aggregated model usage
+          const existingModel = result.modelUsage.get(model);
+          if (existingModel) {
+            existingModel.inputTokens += tokens.inputTokens;
+            existingModel.outputTokens += tokens.outputTokens;
+            existingModel.cacheReadInputTokens += tokens.cacheReadInputTokens;
+            existingModel.cacheCreationInputTokens += tokens.cacheCreationInputTokens;
+          } else {
+            result.modelUsage.set(model, { ...tokens });
+          }
+        }
       }
     } catch {
       continue;
@@ -228,10 +224,7 @@ export async function loadStatsData(): Promise<StatsData | null> {
   try {
     // loadDailyUsageData: cost data only (requires ccusage's PricingFetcher)
     // walkJsonlFiles: tokens + activity data (single file pass)
-    const [dailyUsage, walkResult] = await Promise.all([
-      loadDailyUsageData(),
-      walkJsonlFiles(),
-    ]);
+    const [dailyUsage, walkResult] = await Promise.all([loadDailyUsageData(), walkJsonlFiles()]);
 
     if (dailyUsage.length === 0 && walkResult.totalMessages === 0) {
       return null;
@@ -284,14 +277,12 @@ export async function loadStatsData(): Promise<StatsData | null> {
     }
 
     // Build dailyActivity from walker
-    const dailyActivity: DailyActivity[] = [...allDates]
-      .sort()
-      .map((date) => ({
-        date,
-        messageCount: walkResult.dailyMessageCounts.get(date) ?? 0,
-        sessionCount: walkResult.dailySessionIds.get(date)?.size ?? 0,
-        toolCallCount: walkResult.dailyToolCallCounts.get(date) ?? 0,
-      }));
+    const dailyActivity: DailyActivity[] = [...allDates].sort().map((date) => ({
+      date,
+      messageCount: walkResult.dailyMessageCounts.get(date) ?? 0,
+      sessionCount: walkResult.dailySessionIds.get(date)?.size ?? 0,
+      toolCallCount: walkResult.dailyToolCallCounts.get(date) ?? 0,
+    }));
 
     // Build hourCounts
     const hourCounts: Record<string, number> = {};

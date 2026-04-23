@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
 import type { HistoryEntry } from "@/shared/types/history";
 import { getWeekdayHourlyHeatmap } from "@/shared/utils/historyParser";
 import { getContributionLevel } from "@/shared/utils/statsParser";
+import { useMemo, useState } from "react";
 
 interface WeekdayHeatmapProps {
   entries: HistoryEntry[];

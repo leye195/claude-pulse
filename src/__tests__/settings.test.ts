@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
 import { DEFAULT_SETTINGS, mergeSettings, type AppSettings } from "@/shared/types/settings";
+import { describe, expect, it } from "vitest";
 
 describe("DEFAULT_SETTINGS", () => {
   it("has expected defaults", () => {
@@ -18,10 +18,7 @@ describe("mergeSettings", () => {
   });
 
   it("overrides only specified fields", () => {
-    const merged = mergeSettings(
-      { notifications: { stuckThresholdMinutes: 5 } },
-      DEFAULT_SETTINGS
-    );
+    const merged = mergeSettings({ notifications: { stuckThresholdMinutes: 5 } }, DEFAULT_SETTINGS);
     expect(merged.notifications.stuckThresholdMinutes).toBe(5);
     expect(merged.notifications.enabled).toBe(true);
     expect(merged.notifications.stuckRepeatMinutes).toBe(30);
@@ -36,18 +33,12 @@ describe("mergeSettings", () => {
   });
 
   it("clamps stuckThresholdMinutes to >= 1", () => {
-    const merged = mergeSettings(
-      { notifications: { stuckThresholdMinutes: 0 } },
-      DEFAULT_SETTINGS
-    );
+    const merged = mergeSettings({ notifications: { stuckThresholdMinutes: 0 } }, DEFAULT_SETTINGS);
     expect(merged.notifications.stuckThresholdMinutes).toBe(1);
   });
 
   it("clamps stuckRepeatMinutes to >= 1", () => {
-    const merged = mergeSettings(
-      { notifications: { stuckRepeatMinutes: -10 } },
-      DEFAULT_SETTINGS
-    );
+    const merged = mergeSettings({ notifications: { stuckRepeatMinutes: -10 } }, DEFAULT_SETTINGS);
     expect(merged.notifications.stuckRepeatMinutes).toBe(1);
   });
 
@@ -86,10 +77,7 @@ describe("mergeSettings", () => {
 
   it("does not mutate the base object", () => {
     const baseCopy: AppSettings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
-    mergeSettings(
-      { notifications: { stuckThresholdMinutes: 99 } },
-      baseCopy
-    );
+    mergeSettings({ notifications: { stuckThresholdMinutes: 99 } }, baseCopy);
     expect(baseCopy.notifications.stuckThresholdMinutes).toBe(10);
   });
 });

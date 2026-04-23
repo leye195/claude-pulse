@@ -1,6 +1,6 @@
-import { useMemo } from "react";
 import type { StatsData } from "@/shared/types/stats";
 import { getContributionLevel, getDailyTokensArray } from "@/shared/utils/statsParser";
+import { useMemo } from "react";
 
 const MINI_CELL = 9;
 const MINI_GAP = 2;

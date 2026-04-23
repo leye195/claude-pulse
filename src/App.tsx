@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { HarnessTab } from "@/features/harness";
 import { ProjectsTab } from "@/features/projects";
 import { SettingsTab } from "@/features/settings";
 import { StatsTab } from "@/features/stats";
@@ -7,6 +7,7 @@ import { TopBar } from "@/shared/components/TopBar";
 import { useHistoryData } from "@/shared/hooks/useHistoryData";
 import { useStatsData } from "@/shared/hooks/useStatsData";
 import { useTheme } from "@/shared/hooks/useTheme";
+import { useEffect, useState } from "react";
 
 export function App() {
   const [activeTab, setActiveTab] = useState<TabType>("stats");
@@ -58,6 +59,9 @@ export function App() {
             error={historyError}
             retry={historyRetry}
           />
+        )}
+        {activeTab === "harness" && (
+          <HarnessTab historyData={historyData} historyLoading={historyLoading} />
         )}
         {activeTab === "settings" && <SettingsTab />}
       </div>
